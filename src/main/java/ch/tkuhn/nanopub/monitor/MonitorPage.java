@@ -9,6 +9,9 @@ import java.util.Map;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.data.DataView;
+import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.nanopub.extra.server.ServerInfo;
 import org.nanopub.extra.server.ServerIterator;
@@ -48,6 +51,18 @@ public class MonitorPage extends WebPage {
 			}
 		}
 		add(new Label("min-nanopub-count", minNanopubCount + ""));
+
+		add(new DataView<ServerInfo>("rows", new ListDataProvider<ServerInfo>(serverList)) {
+
+			private static final long serialVersionUID = 4703849210371741467L;
+
+			public void populateItem(final Item<ServerInfo> item) {
+				ServerInfo s = item.getModelObject();
+				item.add(new Label("url", s.getPublicUrl()));
+				item.add(new Label("admin", s.getAdmin()));
+			}
+
+		});
 	}
 
 	private void loadServers() throws Exception {

@@ -16,12 +16,23 @@
 <em>under construction...</em>
 </p>
 
-<div wicket:id="map" id="map">Map</div>
+<div wicket:id="map" id="map"></div>
 
 <p>
 <strong>Number of nanopub servers:</strong> <span wicket:id="server-count"></span><br/>
 <strong>Number of unique nanopubs:</strong> at least <span wicket:id="min-nanopub-count"></span>
 </p>
+
+<table>
+<tr>
+<th>URL</th>
+<th>Admin</th>
+</tr>
+<tr wicket:id="rows">
+<td><span wicket:id="url"></span></td>
+<td><span wicket:id="admin"></span></td>
+</tr>
+</table>
 
 </body>
 
