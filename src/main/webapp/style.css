@@ -4,6 +4,13 @@ body {
 	font-family: Verdana, Helvetica, sans-serif;
 	font-size: 10pt;
 	margin: 1cm;
+	width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h1 {
+    text-align: center;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -20,10 +27,6 @@ h4, h5, h6 {
 
 table {
 	font-size: inherit;
-}
-
-p {
-	width: 1000px;
 }
 
 ul {
@@ -93,34 +96,9 @@ strong {
 	display:inline;
 }
 
-#tabpanel {
-	padding: 20px 0 0 0;
-	margin-bottom: 4ex;
-	white-space: nowrap;
-}
-
-#tabpanel ul {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-}
-
-#tabpanel li {
-	display: inline;
-	border: solid;
-	border-color: #bbb;
-	border-radius: 10px 10px 0 0;
-	border-width: 1px 1px 0 1px;
-	padding: 5px 5px 1px 5px;
-	margin: 0 0.5em 0 0;
-}
-
-#tabpanel li a {
-	padding: 0 0.5em;
-}
-
-#tabpanel li.selected {
-	background: #eee;
+#map {
+	width: 100%;
+	height: 500px;
 }
 
 .alignleft {
