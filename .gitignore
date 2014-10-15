@@ -1,0 +1,8 @@
+*~
+/.*
+/target
+/bin
+/scratch
+/classpath.txt
+*.log
+local.*
