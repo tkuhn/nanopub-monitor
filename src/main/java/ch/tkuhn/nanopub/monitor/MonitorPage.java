@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
@@ -58,7 +59,12 @@ public class MonitorPage extends WebPage {
 
 			public void populateItem(final Item<ServerInfo> item) {
 				ServerInfo s = item.getModelObject();
-				item.add(new Label("url", s.getPublicUrl()));
+				IpInfo i = serverIpinfo.get(s.getPublicUrl());
+				ExternalLink urlLink = new ExternalLink("urllink", s.getPublicUrl());
+				urlLink.add(new Label("url", s.getPublicUrl()));
+				item.add(urlLink);
+				item.add(new Label("nanopubcount", s.getNextNanopubNo()-1));
+				item.add(new Label("location", i.city + ", " + i.country_name));
 				item.add(new Label("admin", s.getAdmin()));
 			}
 
@@ -88,6 +94,8 @@ public class MonitorPage extends WebPage {
 	private static class IpInfo {
 		public double latitude;
 		public double longitude;
+		public String country_name;
+		public String city;
 	}
 
 }
