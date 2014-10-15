@@ -2,6 +2,7 @@ package ch.tkuhn.nanopub.monitor;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.wicket.markup.html.WebPage;
@@ -56,8 +57,9 @@ public class MonitorPage extends WebPage {
 				ExternalLink urlLink = new ExternalLink("urllink", s.getPublicUrl());
 				urlLink.add(new Label("url", s.getPublicUrl()));
 				item.add(urlLink);
+				item.add(new Label("status", d.getStatus()));
+				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
 				item.add(new Label("nanopubcount", s.getNextNanopubNo()-1));
-				item.add(new Label("lastseen", DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG).format(d.getLastSeenDate())));
 				item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
 				item.add(new Label("admin", s.getAdmin()));
 			}
@@ -65,6 +67,11 @@ public class MonitorPage extends WebPage {
 		});
 
 		ServerScanner.initDaemon();
+	}
+
+	private static String formatDate(Date date) {
+		if (date == null) return "";
+		return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG).format(date);
 	}
 
 }

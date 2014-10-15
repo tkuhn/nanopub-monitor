@@ -16,6 +16,7 @@ public class ServerData implements Serializable {
 	private ServerInfo info;
 	private ServerIpInfo ipInfo;
 	private Date lastSeenDate;
+	private String status = "NOT SEEN";
 
 	public ServerData(ServerInfo info) {
 		update(info);
@@ -23,8 +24,13 @@ public class ServerData implements Serializable {
 	}
 
 	public void update(ServerInfo info) {
-		this.info = info;
-		lastSeenDate = new Date();
+		if (info != null) {
+			this.info = info;
+			lastSeenDate = new Date();
+			status = "OK";
+		} else {
+			status = "DOWN";
+		}
 	}
 
 	public ServerInfo getServerInfo() {
@@ -47,6 +53,10 @@ public class ServerData implements Serializable {
 
 	public Date getLastSeenDate() {
 		return lastSeenDate;
+	}
+
+	public String getStatus() {
+		return status;
 	}
 
 }

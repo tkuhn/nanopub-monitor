@@ -44,15 +44,19 @@ public class ServerList implements Serializable {
 	public void refresh() {
 		ServerIterator serverIterator = new ServerIterator();
 		while (serverIterator.hasNext()) {
+			String url = serverIterator.next();
 			try {
-				ServerInfo si = ServerInfo.load(serverIterator.next());
-				if (servers.containsKey(si.getPublicUrl())) {
-					servers.get(si.getPublicUrl()).update(si);
+				ServerInfo si = ServerInfo.load(url);
+				if (servers.containsKey(url)) {
+					servers.get(url).update(si);
 				} else {
-					servers.put(si.getPublicUrl(), new ServerData(si));
+					servers.put(url, new ServerData(si));
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
+				if (servers.containsKey(url)) {
+					servers.get(url).update(null);
+				}
 			}
 		}
     }

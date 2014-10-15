@@ -15,7 +15,7 @@ public class ServerScanner implements ICode {
 		scanTask.setDaemon(true);
 		singleton = new ServerScanner();
 		// TODO move frequency specification to config file
-		scanTask.run(Duration.seconds(600), singleton);
+		scanTask.run(Duration.seconds(60), singleton);
 	}
 
 	private ServerScanner() {
