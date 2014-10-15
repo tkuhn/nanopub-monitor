@@ -40,8 +40,8 @@ public class MonitorPage extends WebPage {
 		long minNanopubCount = 0;
 		for (ServerData sd : sl.getServerData()) {
 			ServerInfo serverInfo = sd.getServerInfo();
-			if (serverInfo.getNextNanopubNo()-1 > minNanopubCount) {
-				minNanopubCount = serverInfo.getNextNanopubNo()-1;
+			if (serverInfo.getNextNanopubNo() > minNanopubCount) {
+				minNanopubCount = serverInfo.getNextNanopubNo();
 			}
 		}
 		add(new Label("min-nanopub-count", minNanopubCount + ""));
@@ -62,7 +62,7 @@ public class MonitorPage extends WebPage {
 				item.add(new Label("successratio", d.getSuccessRatioString()));
 				item.add(new Label("resptime", d.getResponseTimeString()));
 				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
-				item.add(new Label("nanopubcount", s.getNextNanopubNo()-1));
+				item.add(new Label("nanopubcount", s.getNextNanopubNo()));
 				item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
 				item.add(new Label("admin", s.getAdmin()));
 			}

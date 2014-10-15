@@ -50,9 +50,9 @@ public class ServerScanner implements ICode {
 		for (ServerData d : ServerList.get().getServerData()) {
 			logger.info("Testing server " + d.getServerInfo().getPublicUrl() + "...");
 			ServerInfo i = d.getServerInfo();
-			if (i.getNextNanopubNo() == 1) continue;
+			if (i.getNextNanopubNo() == 0) continue;
 			try {
-				long npNo = (long) (random.nextDouble() * (i.getNextNanopubNo()-1));
+				long npNo = (long) (random.nextDouble() * (i.getNextNanopubNo()));
 				logger.info("Trying to retrieve nanopub number " + npNo);
 				int pageNo = (int) (npNo / i.getPageSize());
 				int rowNo = (int) (npNo % i.getPageSize());
