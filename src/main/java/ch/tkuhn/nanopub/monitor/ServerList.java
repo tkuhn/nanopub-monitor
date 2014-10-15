@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,10 +30,14 @@ public class ServerList implements Serializable {
 	}
 
 	private static List<ServerInfo> serverInfos;
-	private static Map<String,ServerIpInfo> serverIpInfos;
+	private static Map<String,ServerIpInfo> serverIpInfos = new HashMap<String,ServerIpInfo>();
+	private static Map<String,Date> lastSeen = new HashMap<String,Date>();
 
 	private ServerList() {
-		loadServers();
+		refresh();
+		for (ServerInfo si : serverInfos) {
+			getServerIpInfo(si);
+		}
 	}
 
 	public List<ServerInfo> getServerInfos() {
@@ -48,22 +53,34 @@ public class ServerList implements Serializable {
 	}
 
 	public ServerIpInfo getServerIpInfo(ServerInfo si) {
+		if (!serverIpInfos.containsKey(si.getPublicUrl())) {
+			try {
+				URL serverUrl = new URL(si.getPublicUrl());
+				URL geoipUrl = new URL("http://freegeoip.net/json/" + serverUrl.getHost());
+				ServerIpInfo ipInfo = new Gson().fromJson(new InputStreamReader(geoipUrl.openStream()), ServerIpInfo.class);
+				serverIpInfos.put(si.getPublicUrl(), ipInfo);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				return ServerIpInfo.empty;
+			}
+		}
 		return serverIpInfos.get(si.getPublicUrl());
 	}
 
-	private void loadServers() {
-		serverInfos = new ArrayList<ServerInfo>();
-		serverIpInfos = new HashMap<String,ServerIpInfo>();
+	public Date getLastSeenDate(ServerInfo si) {
+		return lastSeen.get(si.getPublicUrl());
+	}
+
+	public void refresh() {
+		List<ServerInfo> si = new ArrayList<ServerInfo>();
 
 		ServerIterator serverIterator = new ServerIterator();
 		while (serverIterator.hasNext()) {
 			try {
 				ServerInfo serverInfo = ServerInfo.load(serverIterator.next());
-				URL serverUrl = new URL(serverInfo.getPublicUrl());
-				URL geoipUrl = new URL("http://freegeoip.net/json/" + serverUrl.getHost());
-				ServerIpInfo ipInfo = new Gson().fromJson(new InputStreamReader(geoipUrl.openStream()), ServerIpInfo.class);
-				serverInfos.add(serverInfo);
-				serverIpInfos.put(serverInfo.getPublicUrl(), ipInfo);
+				si.add(serverInfo);
+				serverInfos = si;
+				lastSeen.put(serverInfo.getPublicUrl(), new Date());
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

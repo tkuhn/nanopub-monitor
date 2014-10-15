@@ -2,19 +2,21 @@ package ch.tkuhn.nanopub.monitor;
 
 public class ServerIpInfo {
 
-	private double latitude;
-	private double longitude;
+	private Double latitude;
+	private Double longitude;
 	private String country_name;
 	private String city;
+
+	public static ServerIpInfo empty = new ServerIpInfo();
 
 	private ServerIpInfo() {
 	}
 
-	public double getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	public double getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 

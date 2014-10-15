@@ -1,5 +1,6 @@
 package ch.tkuhn.nanopub.monitor;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,11 +54,14 @@ public class MonitorPage extends WebPage {
 				urlLink.add(new Label("url", s.getPublicUrl()));
 				item.add(urlLink);
 				item.add(new Label("nanopubcount", s.getNextNanopubNo()-1));
+				item.add(new Label("lastseen", DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG).format(sl.getLastSeenDate(s))));
 				item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
 				item.add(new Label("admin", s.getAdmin()));
 			}
 
 		});
+
+		ServerScanner.initDaemon();
 	}
 
 }
