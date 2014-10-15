@@ -20,6 +20,11 @@ public class ServerData implements Serializable {
 	private String subStatus = "?";
 	private long responseTime = -1;
 
+	int countUp = 0;
+	int countDown = 0;
+	int countSuccess = 0;
+	int countFailure = 0;
+
 	public ServerData(ServerInfo info) {
 		update(info);
 		getIpInfo();
@@ -29,8 +34,10 @@ public class ServerData implements Serializable {
 		if (info != null) {
 			this.info = info;
 			lastSeenDate = new Date();
+			countUp++;
 			status = "UP";
 		} else {
+			countDown++;
 			status = "DOWN";
 		}
 	}
@@ -57,12 +64,15 @@ public class ServerData implements Serializable {
 		return lastSeenDate;
 	}
 
-	public void setSubStatus(String subStatus) {
-		this.subStatus = subStatus;
+	public void reportTestFailure(String message) {
+		this.subStatus = message;
+		countFailure++;
 	}
 
-	public void setResponseTime(long responseTime) {
+	public void reportTestSuccess(long responseTime) {
+		this.subStatus = "OK";
 		this.responseTime = responseTime;
+		countSuccess++;
 	}
 
 	public String getStatusString() {
@@ -72,6 +82,22 @@ public class ServerData implements Serializable {
 	public String getResponseTimeString() {
 		if (responseTime < 0) return "";
 		return responseTime + "";
+	}
+
+	public String getUpRatioString() {
+		if (countUp + countDown > 0) {
+			return (((float) countUp / (countUp + countDown)) * 100) + "%";
+		} else {
+			return "?";
+		}
+	}
+
+	public String getSuccessRatioString() {
+		if (countSuccess + countFailure > 0) {
+			return (((float) countSuccess / (countSuccess + countFailure)) * 100) + "%";
+		} else {
+			return "?";
+		}
 	}
 
 }

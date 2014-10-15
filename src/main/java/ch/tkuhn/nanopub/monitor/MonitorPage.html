@@ -13,8 +13,8 @@
 <h1>Nanopub Monitor</h1>
 
 <p>
-<strong>Number of nanopub servers:</strong> <span wicket:id="server-count"></span><br/>
-<strong>Number of unique nanopubs:</strong> at least <span wicket:id="min-nanopub-count"></span>
+<span wicket:id="server-count"></span> <strong>nanopub servers</strong><br/>
+At least <span wicket:id="min-nanopub-count"></span> <strong>unique nanopubs</strong>
 </p>
 
 <div wicket:id="map" id="map"></div>
@@ -24,8 +24,10 @@
 <tr>
 <th>URL</th>
 <th>Status</th>
-<th>Last Seen</th>
+<th>Up Ratio</th>
+<th>Success Ratio</th>
 <th>Resp Time ms</th>
+<th>Last Seen</th>
 <th>Nanopub Count</th>
 <th>Server Location</th>
 <th>Admin</th>
@@ -33,8 +35,10 @@
 <tr wicket:id="rows">
 <td><a wicket:id="urllink"><span wicket:id="url"></span></a></td>
 <td><span wicket:id="status"></span></td>
-<td><span wicket:id="lastseen"></span></td>
+<td><span wicket:id="upratio"></span></td>
+<td><span wicket:id="successratio"></span></td>
 <td><span wicket:id="resptime"></span></td>
+<td><span wicket:id="lastseen"></span></td>
 <td><span wicket:id="nanopubcount"></span></td>
 <td><span wicket:id="location"></span></td>
 <td><span wicket:id="admin"></span></td>

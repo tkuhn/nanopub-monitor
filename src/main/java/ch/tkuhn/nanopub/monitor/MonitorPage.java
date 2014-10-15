@@ -58,8 +58,10 @@ public class MonitorPage extends WebPage {
 				urlLink.add(new Label("url", s.getPublicUrl()));
 				item.add(urlLink);
 				item.add(new Label("status", d.getStatusString()));
-				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
+				item.add(new Label("upratio", d.getUpRatioString()));
+				item.add(new Label("successratio", d.getSuccessRatioString()));
 				item.add(new Label("resptime", d.getResponseTimeString()));
+				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
 				item.add(new Label("nanopubcount", s.getNextNanopubNo()-1));
 				item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
 				item.add(new Label("admin", s.getAdmin()));

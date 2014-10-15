@@ -32,7 +32,7 @@ public class ServerScanner implements ICode {
 		scanTask.setDaemon(true);
 		singleton = new ServerScanner();
 		// TODO move frequency specification to config file
-		scanTask.run(Duration.seconds(60), singleton);
+		scanTask.run(Duration.seconds(300), singleton);
 	}
 
 	private ServerScanner() {
@@ -70,19 +70,18 @@ public class ServerScanner implements ICode {
 					HttpResponse resp = HttpClientBuilder.create().build().execute(get);
 					watch.stop();
 					logger.info("Response time in milliseconds: " + watch.getTime());
-					d.setResponseTime(watch.getTime());
 					if (!wasSuccessful(resp)) {
 						logger.info("Test failed. HTTP code " + resp.getStatusLine().getStatusCode());
-						d.setSubStatus("INACCESSIBLE");
+						d.reportTestFailure("INACCESSIBLE");
 					} else {
 						InputStream in = resp.getEntity().getContent();
 						Nanopub np = new NanopubImpl(in, RDFFormat.TRIG);
 						if (TrustyNanopubUtils.isValidTrustyNanopub(np)) {
 							logger.info("Test succeeded on nanopub: " + np.getUri());
-							d.setSubStatus("OK");
+							d.reportTestSuccess(watch.getTime());
 						} else {
 							logger.info("Test failed. Not a trusty nanopub: " + np.getUri());
-							d.setSubStatus("BROKEN");
+							d.reportTestFailure("BROKEN");
 						}
 					}
 					break;
