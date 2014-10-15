@@ -28,7 +28,8 @@ public class MonitorPage extends WebPage {
 		map.setScaleControlEnabled(true);
 		map.setScrollWheelZoomEnabled(true);
 		List<GLatLng> points = new ArrayList<GLatLng>();
-		for (ServerIpInfo ipInfo : sl.getServerIpInfos()) {
+		for (ServerData sd : sl.getServerData()) {
+			ServerIpInfo ipInfo = sd.getIpInfo();
 			points.add(new GLatLng(ipInfo.getLatitude(), ipInfo.getLongitude()));
 		}
 		map.fitMarkers(points, true);
@@ -36,25 +37,27 @@ public class MonitorPage extends WebPage {
 
 		add(new Label("server-count", sl.getServerCount() + ""));
 		long minNanopubCount = 0;
-		for (ServerInfo serverInfo : sl.getServerInfos()) {
+		for (ServerData sd : sl.getServerData()) {
+			ServerInfo serverInfo = sd.getServerInfo();
 			if (serverInfo.getNextNanopubNo()-1 > minNanopubCount) {
 				minNanopubCount = serverInfo.getNextNanopubNo()-1;
 			}
 		}
 		add(new Label("min-nanopub-count", minNanopubCount + ""));
 
-		add(new DataView<ServerInfo>("rows", new ListDataProvider<ServerInfo>(sl.getServerInfos())) {
+		add(new DataView<ServerData>("rows", new ListDataProvider<ServerData>(sl.getServerData())) {
 
 			private static final long serialVersionUID = 4703849210371741467L;
 
-			public void populateItem(final Item<ServerInfo> item) {
-				ServerInfo s = item.getModelObject();
-				ServerIpInfo i = sl.getServerIpInfo(s);
+			public void populateItem(final Item<ServerData> item) {
+				ServerData d = item.getModelObject();
+				ServerInfo s = d.getServerInfo();
+				ServerIpInfo i = d.getIpInfo();
 				ExternalLink urlLink = new ExternalLink("urllink", s.getPublicUrl());
 				urlLink.add(new Label("url", s.getPublicUrl()));
 				item.add(urlLink);
 				item.add(new Label("nanopubcount", s.getNextNanopubNo()-1));
-				item.add(new Label("lastseen", DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG).format(sl.getLastSeenDate(s))));
+				item.add(new Label("lastseen", DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG).format(d.getLastSeenDate())));
 				item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
 				item.add(new Label("admin", s.getAdmin()));
 			}

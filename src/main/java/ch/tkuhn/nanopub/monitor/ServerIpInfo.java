@@ -1,6 +1,10 @@
 package ch.tkuhn.nanopub.monitor;
 
-public class ServerIpInfo {
+import java.io.Serializable;
+
+public class ServerIpInfo implements Serializable {
+
+	private static final long serialVersionUID = 4805668042976093282L;
 
 	private Double latitude;
 	private Double longitude;
