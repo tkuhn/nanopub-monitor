@@ -57,8 +57,9 @@ public class MonitorPage extends WebPage {
 				ExternalLink urlLink = new ExternalLink("urllink", s.getPublicUrl());
 				urlLink.add(new Label("url", s.getPublicUrl()));
 				item.add(urlLink);
-				item.add(new Label("status", d.getStatus()));
+				item.add(new Label("status", d.getStatusString()));
 				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
+				item.add(new Label("resptime", d.getResponseTimeString()));
 				item.add(new Label("nanopubcount", s.getNextNanopubNo()-1));
 				item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
 				item.add(new Label("admin", s.getAdmin()));

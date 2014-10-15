@@ -17,6 +17,8 @@ public class ServerData implements Serializable {
 	private ServerIpInfo ipInfo;
 	private Date lastSeenDate;
 	private String status = "NOT SEEN";
+	private String subStatus = "?";
+	private long responseTime = -1;
 
 	public ServerData(ServerInfo info) {
 		update(info);
@@ -27,7 +29,7 @@ public class ServerData implements Serializable {
 		if (info != null) {
 			this.info = info;
 			lastSeenDate = new Date();
-			status = "OK";
+			status = "UP";
 		} else {
 			status = "DOWN";
 		}
@@ -55,8 +57,21 @@ public class ServerData implements Serializable {
 		return lastSeenDate;
 	}
 
-	public String getStatus() {
-		return status;
+	public void setSubStatus(String subStatus) {
+		this.subStatus = subStatus;
+	}
+
+	public void setResponseTime(long responseTime) {
+		this.responseTime = responseTime;
+	}
+
+	public String getStatusString() {
+		return status + ", " + subStatus;
+	}
+
+	public String getResponseTimeString() {
+		if (responseTime < 0) return "";
+		return responseTime + "";
 	}
 
 }
