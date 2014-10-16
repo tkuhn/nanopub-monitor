@@ -61,6 +61,7 @@ public class MonitorPage extends WebPage {
 				item.add(new Label("upratio", d.getUpRatioString()));
 				item.add(new Label("successratio", d.getSuccessRatioString()));
 				item.add(new Label("resptime", d.getAvgResponseTimeString()));
+				item.add(new Label("dist", d.getDistanceString()));
 				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
 				item.add(new Label("nanopubcount", s.getNextNanopubNo()));
 				item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));

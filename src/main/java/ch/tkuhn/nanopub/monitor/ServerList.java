@@ -15,6 +15,7 @@ public class ServerList implements Serializable {
 	private static final long serialVersionUID = -6272932136983159574L;
 
 	private static ServerList serverList;
+	private static ServerIpInfo monitorIpInfo;
 
 	public static ServerList get() {
 		if (serverList == null) {
@@ -39,6 +40,17 @@ public class ServerList implements Serializable {
 
 	public int getServerCount() {
 		return servers.size();
+	}
+
+	public ServerIpInfo getMonitorIpInfo() {
+		if (monitorIpInfo == null) {
+			try {
+				monitorIpInfo = ServerData.fetchIpInfo("");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+		return monitorIpInfo;
 	}
 
 	public void refresh() {

@@ -1,5 +1,6 @@
 package ch.tkuhn.nanopub.monitor;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URL;
@@ -49,9 +50,7 @@ public class ServerData implements Serializable {
 	public ServerIpInfo getIpInfo() {
 		if (ipInfo == null) {
 			try {
-				URL serverUrl = new URL(info.getPublicUrl());
-				URL geoipUrl = new URL("http://freegeoip.net/json/" + serverUrl.getHost());
-				ipInfo = new Gson().fromJson(new InputStreamReader(geoipUrl.openStream()), ServerIpInfo.class);
+				ipInfo = fetchIpInfo(new URL(info.getPublicUrl()).getHost());
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				return ServerIpInfo.empty;
@@ -98,6 +97,33 @@ public class ServerData implements Serializable {
 		} else {
 			return "?";
 		}
+	}
+
+	public String getDistanceString() {
+		ServerIpInfo monitorIpInfo = ServerList.get().getMonitorIpInfo();
+		if (monitorIpInfo == null) return "?";
+		ServerIpInfo serverIpInfo = getIpInfo();
+		Double sLat = serverIpInfo.getLatitude();
+		Double sLng = serverIpInfo.getLongitude();
+		if (sLat == null || sLng == null) return "?";
+		int distKm = (int) calculateDistance(sLat, sLng, monitorIpInfo.getLatitude(), monitorIpInfo.getLongitude());
+		return distKm + " km";
+	}
+
+	public static ServerIpInfo fetchIpInfo(String host) throws IOException {
+		URL geoipUrl = new URL("http://freegeoip.net/json/" + host);
+		return new Gson().fromJson(new InputStreamReader(geoipUrl.openStream()), ServerIpInfo.class);
+	}
+
+	private static double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
+		double earthRadius = 6371.0;
+		double latD = Math.toRadians(lat2 - lat1);
+		double lngD = Math.toRadians(lng2 - lng1);
+		double sinLatD = Math.sin(latD / 2);
+		double sinLngD = Math.sin(lngD / 2);
+		double a = Math.pow(sinLatD, 2) + Math.pow(sinLngD, 2) * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+		return earthRadius * c;
 	}
 
 }
