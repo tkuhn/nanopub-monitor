@@ -18,7 +18,7 @@ public class ServerData implements Serializable {
 	private Date lastSeenDate;
 	private String status = "NOT SEEN";
 	private String subStatus = "?";
-	private long responseTime = -1;
+	private long totalResponseTime = 0;
 
 	int countUp = 0;
 	int countDown = 0;
@@ -70,8 +70,8 @@ public class ServerData implements Serializable {
 	}
 
 	public void reportTestSuccess(long responseTime) {
-		this.subStatus = "OK";
-		this.responseTime = responseTime;
+		subStatus = "OK";
+		totalResponseTime += responseTime;
 		countSuccess++;
 	}
 
@@ -79,9 +79,9 @@ public class ServerData implements Serializable {
 		return status + ", " + subStatus;
 	}
 
-	public String getResponseTimeString() {
-		if (responseTime < 0) return "";
-		return responseTime + "";
+	public String getAvgResponseTimeString() {
+		if (countSuccess == 0) return "?";
+		return (totalResponseTime / (float) countSuccess) + " ms";
 	}
 
 	public String getUpRatioString() {
