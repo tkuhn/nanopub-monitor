@@ -80,7 +80,7 @@ public class ServerData implements Serializable {
 
 	public String getAvgResponseTimeString() {
 		if (countSuccess == 0) return "?";
-		return (totalResponseTime / (float) countSuccess) + " ms";
+		return (int) (totalResponseTime / (float) countSuccess) + " ms";
 	}
 
 	public String getUpRatioString() {
