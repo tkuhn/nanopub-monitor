@@ -68,7 +68,6 @@ public class ServerScanner implements ICode {
 					watch.start();
 					HttpResponse resp = HttpClientBuilder.create().build().execute(get);
 					watch.stop();
-					logger.info("Response time in milliseconds: " + watch.getTime());
 					if (!wasSuccessful(resp)) {
 						logger.info("Test failed. HTTP code " + resp.getStatusLine().getStatusCode());
 						d.reportTestFailure("INACCESSIBLE");
@@ -76,7 +75,6 @@ public class ServerScanner implements ICode {
 						InputStream in = resp.getEntity().getContent();
 						Nanopub np = new NanopubImpl(in, RDFFormat.TRIG);
 						if (TrustyNanopubUtils.isValidTrustyNanopub(np)) {
-							logger.info("Test succeeded on nanopub: " + np.getUri());
 							d.reportTestSuccess(watch.getTime());
 						} else {
 							logger.info("Test failed. Not a trusty nanopub: " + np.getUri());
@@ -87,6 +85,7 @@ public class ServerScanner implements ICode {
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
+				d.reportTestFailure("INACCESSIBLE");
 			}
 		}
 	}

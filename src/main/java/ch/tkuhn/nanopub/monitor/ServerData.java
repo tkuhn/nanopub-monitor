@@ -7,6 +7,8 @@ import java.net.URL;
 import java.util.Date;
 
 import org.nanopub.extra.server.ServerInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -14,11 +16,14 @@ public class ServerData implements Serializable {
 
 	private static final long serialVersionUID = 1383338443824756632L;
 
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	private ServerInfo info;
 	private ServerIpInfo ipInfo;
 	private Date lastSeenDate;
 	private String status = "NOT SEEN";
 	private String subStatus = "?";
+	private String distanceString = null;
 	private long totalResponseTime = 0;
 
 	int countUp = 0;
@@ -64,18 +69,20 @@ public class ServerData implements Serializable {
 	}
 
 	public void reportTestFailure(String message) {
-		this.subStatus = message;
+		subStatus = message;
 		countFailure++;
+		logger.info("Scan result for " + info.getPublicUrl() + ": " + getStatusString());
 	}
 
 	public void reportTestSuccess(long responseTime) {
 		subStatus = "OK";
 		totalResponseTime += responseTime;
 		countSuccess++;
+		logger.info("Scan result for " + info.getPublicUrl() + ": " + getStatusString() + " " + responseTime + "ms");
 	}
 
 	public String getStatusString() {
-		return status + ", " + subStatus;
+		return status + " - " + subStatus;
 	}
 
 	public String getAvgResponseTimeString() {
@@ -100,14 +107,17 @@ public class ServerData implements Serializable {
 	}
 
 	public String getDistanceString() {
-		ServerIpInfo monitorIpInfo = ServerList.get().getMonitorIpInfo();
-		if (monitorIpInfo == null) return "?";
-		ServerIpInfo serverIpInfo = getIpInfo();
-		Double sLat = serverIpInfo.getLatitude();
-		Double sLng = serverIpInfo.getLongitude();
-		if (sLat == null || sLng == null) return "?";
-		int distKm = (int) calculateDistance(sLat, sLng, monitorIpInfo.getLatitude(), monitorIpInfo.getLongitude());
-		return distKm + " km";
+		if (distanceString == null) {
+			ServerIpInfo monitorIpInfo = ServerList.get().getMonitorIpInfo();
+			if (monitorIpInfo == null) return "?";
+			ServerIpInfo serverIpInfo = getIpInfo();
+			Double sLat = serverIpInfo.getLatitude();
+			Double sLng = serverIpInfo.getLongitude();
+			if (sLat == null || sLng == null) return "?";
+			int distKm = (int) calculateDistance(sLat, sLng, monitorIpInfo.getLatitude(), monitorIpInfo.getLongitude());
+			distanceString = distKm + " km";
+		}
+		return distanceString;
 	}
 
 	public static ServerIpInfo fetchIpInfo(String host) throws IOException {
