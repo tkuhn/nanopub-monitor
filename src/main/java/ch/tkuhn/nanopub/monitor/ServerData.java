@@ -71,18 +71,18 @@ public class ServerData implements Serializable {
 	public void reportTestFailure(String message) {
 		subStatus = message;
 		countFailure++;
-		logger.info("Scan result for " + info.getPublicUrl() + ": " + getStatusString());
+		logger.info("Test result: " + info.getPublicUrl() + " " + getStatusString());
 	}
 
 	public void reportTestSuccess(long responseTime) {
 		subStatus = "OK";
 		totalResponseTime += responseTime;
 		countSuccess++;
-		logger.info("Scan result for " + info.getPublicUrl() + ": " + getStatusString() + " " + responseTime + "ms");
+		logger.info("Test result: " + info.getPublicUrl() + " " + getStatusString() + " " + responseTime + "ms");
 	}
 
 	public String getStatusString() {
-		return status + " - " + subStatus;
+		return status + " " + subStatus;
 	}
 
 	public String getAvgResponseTimeString() {
