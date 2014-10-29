@@ -53,7 +53,7 @@ public class ServerScanner implements ICode {
 			try {
 				long npNo = (long) (random.nextDouble() * (i.getNextNanopubNo()));
 				logger.info("Trying to retrieve nanopub number " + npNo);
-				int pageNo = (int) (npNo / i.getPageSize());
+				int pageNo = (int) (npNo / i.getPageSize()) + 1;
 				int rowNo = (int) (npNo % i.getPageSize());
 				int r = 0;
 				for (String nanopubUri : NanopubServerUtils.loadNanopubUriList(i, pageNo)) {
