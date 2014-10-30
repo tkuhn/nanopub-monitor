@@ -31,7 +31,9 @@ public class MonitorPage extends WebPage {
 		List<GLatLng> points = new ArrayList<GLatLng>();
 		for (ServerData sd : sl.getServerData()) {
 			ServerIpInfo ipInfo = sd.getIpInfo();
-			points.add(new GLatLng(ipInfo.getLatitude(), ipInfo.getLongitude()));
+			if (ipInfo != null) {
+				points.add(new GLatLng(ipInfo.getLatitude(), ipInfo.getLongitude()));
+			}
 		}
 		map.fitMarkers(points, true);
 		add(map);
@@ -64,7 +66,11 @@ public class MonitorPage extends WebPage {
 				item.add(new Label("dist", d.getDistanceString()));
 				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
 				item.add(new Label("nanopubcount", s.getNextNanopubNo()));
-				item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
+				if (i != null) {
+					item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
+				} else {
+					item.add(new Label("location", "(unknown)"));
+				}
 				item.add(new Label("admin", s.getAdmin()));
 			}
 
