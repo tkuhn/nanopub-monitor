@@ -13,12 +13,16 @@ import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.nanopub.extra.server.ServerInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.wicketstuff.gmap.GMap;
 import org.wicketstuff.gmap.api.GLatLng;
 
 public class MonitorPage extends WebPage {
 
 	private static final long serialVersionUID = -2069078890268133150L;
+
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public MonitorPage(final PageParameters parameters) throws Exception {
 		super(parameters);
@@ -30,9 +34,11 @@ public class MonitorPage extends WebPage {
 		map.setScrollWheelZoomEnabled(true);
 		List<GLatLng> points = new ArrayList<GLatLng>();
 		for (ServerData sd : sl.getServerData()) {
-			ServerIpInfo ipInfo = sd.getIpInfo();
-			if (ipInfo != null) {
+			try {
+				ServerIpInfo ipInfo = sd.getIpInfo();
 				points.add(new GLatLng(ipInfo.getLatitude(), ipInfo.getLongitude()));
+			} catch (Exception ex) {
+				logger.error("Something went wrong while getting coordinates", ex);
 			}
 		}
 		map.fitMarkers(points, true);
@@ -66,11 +72,7 @@ public class MonitorPage extends WebPage {
 				item.add(new Label("dist", d.getDistanceString()));
 				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
 				item.add(new Label("nanopubcount", s.getNextNanopubNo()));
-				if (i != null) {
-					item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
-				} else {
-					item.add(new Label("location", "(unknown)"));
-				}
+				item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
 				item.add(new Label("admin", s.getAdmin()));
 			}
 
