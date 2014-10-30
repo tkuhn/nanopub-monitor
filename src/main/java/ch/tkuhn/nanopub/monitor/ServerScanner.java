@@ -7,6 +7,8 @@ import net.trustyuri.TrustyUriUtils;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.wicket.util.thread.ICode;
@@ -46,6 +48,8 @@ public class ServerScanner implements ICode {
 	}
 
 	private void testServers() {
+		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(10 * 1000).build();
+		HttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 		for (ServerData d : ServerList.get().getServerData()) {
 			logger.info("Testing server " + d.getServerInfo().getPublicUrl() + "...");
 			ServerInfo i = d.getServerInfo();
@@ -66,7 +70,7 @@ public class ServerScanner implements ICode {
 					get.setHeader("Accept", "application/trig");
 					StopWatch watch = new StopWatch();
 					watch.start();
-					HttpResponse resp = HttpClientBuilder.create().build().execute(get);
+					HttpResponse resp = c.execute(get);
 					watch.stop();
 					if (!wasSuccessful(resp)) {
 						logger.info("Test failed. HTTP code " + resp.getStatusLine().getStatusCode());
