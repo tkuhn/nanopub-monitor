@@ -6,10 +6,10 @@ public class ServerIpInfo implements Serializable {
 
 	private static final long serialVersionUID = 4805668042976093282L;
 
-	private Double latitude;
-	private Double longitude;
-	private String country_name;
-	private String city;
+	private Double latitude = 0.0;
+	private Double longitude = 0.0;
+	private String country_name = "unknown country";
+	private String city = "unknown city";
 
 	public static ServerIpInfo empty = new ServerIpInfo();
 
