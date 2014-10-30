@@ -58,7 +58,7 @@ public class ServerData implements Serializable {
 				ipInfo = fetchIpInfo(new URL(info.getPublicUrl()).getHost());
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				return ServerIpInfo.empty;
+				ipInfo = ServerIpInfo.empty;
 			}
 		}
 		return ipInfo;
