@@ -28,21 +28,25 @@ public class MonitorPage extends WebPage {
 		super(parameters);
 		final ServerList sl = ServerList.get();
 
-		GMap map = new GMap("map");
-		map.setStreetViewControlEnabled(false);
-		map.setScaleControlEnabled(true);
-		map.setScrollWheelZoomEnabled(true);
-		List<GLatLng> points = new ArrayList<GLatLng>();
-		for (ServerData sd : sl.getServerData()) {
-			try {
-				ServerIpInfo ipInfo = sd.getIpInfo();
-				points.add(new GLatLng(ipInfo.getLatitude(), ipInfo.getLongitude()));
-			} catch (Exception ex) {
-				logger.error("Something went wrong while getting coordinates", ex);
+		if (MonitorConf.get().showMap()) {
+			GMap map = new GMap("map");
+			map.setStreetViewControlEnabled(false);
+			map.setScaleControlEnabled(true);
+			map.setScrollWheelZoomEnabled(true);
+			List<GLatLng> points = new ArrayList<GLatLng>();
+			for (ServerData sd : sl.getServerData()) {
+				try {
+					ServerIpInfo ipInfo = sd.getIpInfo();
+					points.add(new GLatLng(ipInfo.getLatitude(), ipInfo.getLongitude()));
+				} catch (Exception ex) {
+					logger.error("Something went wrong while getting coordinates", ex);
+				}
 			}
+			map.fitMarkers(points, true);
+			add(map);
+		} else {
+			add(new Label("map"));
 		}
-		map.fitMarkers(points, true);
-		add(map);
 
 		add(new Label("server-count", sl.getServerCount() + ""));
 		long minNanopubCount = 0;

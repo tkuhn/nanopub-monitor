@@ -38,5 +38,12 @@ public class MonitorConf {
 		return Integer.parseInt(conf.getProperty("scan-freq"));
 	}
 
+	public boolean showMap() {
+		return Boolean.parseBoolean(conf.getProperty("show-map"));
+	}
+
+	public boolean isGeoIpInfoEnabled() {
+		return Boolean.parseBoolean(conf.getProperty("get-geoip-info"));
+	}
 
 }

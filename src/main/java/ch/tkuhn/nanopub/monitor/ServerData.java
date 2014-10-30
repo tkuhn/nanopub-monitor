@@ -57,7 +57,7 @@ public class ServerData implements Serializable {
 			try {
 				ipInfo = fetchIpInfo(new URL(info.getPublicUrl()).getHost());
 			} catch (Exception ex) {
-				ex.printStackTrace();
+				logger.error(ex.getMessage(), ex);
 				ipInfo = ServerIpInfo.empty;
 			}
 		}
@@ -121,6 +121,7 @@ public class ServerData implements Serializable {
 	}
 
 	public static ServerIpInfo fetchIpInfo(String host) throws IOException {
+		if (!MonitorConf.get().isGeoIpInfoEnabled()) return ServerIpInfo.empty;
 		URL geoipUrl = new URL("http://freegeoip.net/json/" + host);
 		return new Gson().fromJson(new InputStreamReader(geoipUrl.openStream()), ServerIpInfo.class);
 	}
