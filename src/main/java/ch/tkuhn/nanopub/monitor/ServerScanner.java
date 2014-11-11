@@ -25,18 +25,30 @@ import org.slf4j.Logger;
 public class ServerScanner implements ICode {
 
 	private static ServerScanner singleton;
+	private static Task scanTask;
 	private static Random random = new Random();
-	private Logger logger;
 
 	public static void initDaemon() {
-		if (singleton != null) return;
-		Task scanTask = new Task("server-scanner");
+		if (singleton != null) {
+			if (singleton.aliveAtTime + 10 * 60 * 1000 < System.currentTimeMillis()) {
+				singleton.logger.info("No sign of life of the daemon for 10 minutes. Starting new one.");
+				singleton = null;
+				scanTask.interrupt();
+			} else {
+				return;
+			}
+		}
+		scanTask = new Task("server-scanner");
 		scanTask.setDaemon(true);
 		singleton = new ServerScanner();
 		scanTask.run(Duration.seconds(MonitorConf.get().getScanFreq()), singleton);
 	}
 
+	private Logger logger;
+	private long aliveAtTime;
+
 	private ServerScanner() {
+		stillAlive();
 	}
 
 	@Override
@@ -44,6 +56,7 @@ public class ServerScanner implements ICode {
 		this.logger = logger;
 		logger.info("Scan servers...");
 		ServerList.get().refresh();
+		stillAlive();
 		testServers();
 	}
 
@@ -52,6 +65,7 @@ public class ServerScanner implements ICode {
 		HttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 		for (ServerData d : ServerList.get().getServerData()) {
 			logger.info("Testing server " + d.getServerInfo().getPublicUrl() + "...");
+			stillAlive();
 			ServerInfo i = d.getServerInfo();
 			if (i.getNextNanopubNo() == 0) continue;
 			try {
@@ -97,6 +111,10 @@ public class ServerScanner implements ICode {
 	private boolean wasSuccessful(HttpResponse resp) {
 		int c = resp.getStatusLine().getStatusCode();
 		return c >= 200 && c < 300;
+	}
+
+	private void stillAlive() {
+		aliveAtTime = System.currentTimeMillis();
 	}
 
 }
