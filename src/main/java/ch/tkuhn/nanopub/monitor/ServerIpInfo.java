@@ -6,8 +6,8 @@ public class ServerIpInfo implements Serializable {
 
 	private static final long serialVersionUID = 4805668042976093282L;
 
-	private Double latitude = 0.0;
-	private Double longitude = 0.0;
+	private Double latitude = null;
+	private Double longitude = null;
 	private String country_name = "unknown country";
 	private String city = "unknown city";
 

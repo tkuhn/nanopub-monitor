@@ -20,6 +20,7 @@ public class ServerData implements Serializable {
 
 	private ServerInfo info;
 	private ServerIpInfo ipInfo;
+	private long lastIpInfoRetrieval;
 	private Date lastSeenDate;
 	private String status = "NOT SEEN";
 	private String subStatus = "?";
@@ -46,6 +47,19 @@ public class ServerData implements Serializable {
 			countDown++;
 			status = "DOWN";
 		}
+		ensureIpInfoLoaded();
+	}
+
+	private void ensureIpInfoLoaded() {
+		if (ipInfo != null && ipInfo != ServerIpInfo.empty) {
+			// already loaded
+			return;
+		}
+		long now = System.currentTimeMillis();
+		if (now - lastIpInfoRetrieval > 1000 * 60 * 60 * 12) {
+			// retry every 12 hours
+			loadIpInfo();
+		}
 	}
 
 	public ServerInfo getServerInfo() {
@@ -54,14 +68,21 @@ public class ServerData implements Serializable {
 
 	public ServerIpInfo getIpInfo() {
 		if (ipInfo == null) {
-			try {
-				ipInfo = fetchIpInfo(new URL(info.getPublicUrl()).getHost());
-			} catch (Exception ex) {
-				logger.error(ex.getMessage(), ex);
+			loadIpInfo();
+		}
+		return ipInfo;
+	}
+
+	private void loadIpInfo() {
+		lastIpInfoRetrieval = System.currentTimeMillis();
+		try {
+			ipInfo = fetchIpInfo(new URL(info.getPublicUrl()).getHost());
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+			if (ipInfo == null) {
 				ipInfo = ServerIpInfo.empty;
 			}
 		}
-		return ipInfo;
 	}
 
 	public Date getLastSeenDate() {
