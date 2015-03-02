@@ -56,9 +56,9 @@ public class ServerList implements Serializable {
 	public void refresh() {
 		ServerIterator serverIterator = new ServerIterator();
 		while (serverIterator.hasNext()) {
-			String url = serverIterator.next();
+			ServerInfo si = serverIterator.next();
+			String url = si.getPublicUrl();
 			try {
-				ServerInfo si = ServerInfo.load(url);
 				if (servers.containsKey(url)) {
 					servers.get(url).update(si);
 				} else {
