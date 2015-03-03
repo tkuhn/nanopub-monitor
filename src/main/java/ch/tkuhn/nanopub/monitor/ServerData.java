@@ -21,14 +21,11 @@ public class ServerData implements Serializable {
 	private ServerInfo info;
 	private ServerIpInfo ipInfo;
 	private long lastIpInfoRetrieval;
-	private Date lastSeenDate;
+	private Date lastSeenOk;
 	private String status = "NOT SEEN";
-	private String subStatus = "?";
 	private String distanceString = null;
 	private long totalResponseTime = 0;
 
-	int countUp = 0;
-	int countDown = 0;
 	int countSuccess = 0;
 	int countFailure = 0;
 
@@ -40,12 +37,6 @@ public class ServerData implements Serializable {
 	public void update(ServerInfo info) {
 		if (info != null) {
 			this.info = info;
-			lastSeenDate = new Date();
-			countUp++;
-			status = "UP";
-		} else {
-			countDown++;
-			status = "DOWN";
 		}
 		ensureIpInfoLoaded();
 	}
@@ -86,37 +77,30 @@ public class ServerData implements Serializable {
 	}
 
 	public Date getLastSeenDate() {
-		return lastSeenDate;
+		return lastSeenOk;
 	}
 
 	public void reportTestFailure(String message) {
-		subStatus = message;
+		status = message;
 		countFailure++;
 		logger.info("Test result: " + info.getPublicUrl() + " " + getStatusString());
 	}
 
 	public void reportTestSuccess(long responseTime) {
-		subStatus = "OK";
+		lastSeenOk = new Date();
+		status = "OK";
 		totalResponseTime += responseTime;
 		countSuccess++;
 		logger.info("Test result: " + info.getPublicUrl() + " " + getStatusString() + " " + responseTime + "ms");
 	}
 
 	public String getStatusString() {
-		return status + " " + subStatus;
+		return status;
 	}
 
 	public String getAvgResponseTimeString() {
 		if (countSuccess == 0) return "?";
 		return (int) (totalResponseTime / (float) countSuccess) + " ms";
-	}
-
-	public String getUpRatioString() {
-		if (countUp + countDown > 0) {
-			return (((float) countUp / (countUp + countDown)) * 100) + "%";
-		} else {
-			return "?";
-		}
 	}
 
 	public String getSuccessRatioString() {
