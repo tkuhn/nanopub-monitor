@@ -88,7 +88,7 @@ public class ServerScanner implements ICode {
 					watch.stop();
 					if (!wasSuccessful(resp)) {
 						logger.info("Test failed. HTTP code " + resp.getStatusLine().getStatusCode());
-						d.reportTestFailure("INACCESSIBLE");
+						d.reportTestFailure("DOWN");
 					} else {
 						InputStream in = resp.getEntity().getContent();
 						Nanopub np = new NanopubImpl(in, RDFFormat.TRIG);

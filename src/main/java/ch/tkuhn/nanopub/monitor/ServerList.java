@@ -1,6 +1,9 @@
 package ch.tkuhn.nanopub.monitor;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,20 @@ public class ServerList implements Serializable {
 
 	public List<ServerData> getServerData() {
 		return ImmutableList.copyOf(servers.values());
+	}
+
+	public List<ServerData> getSortedServerData() {
+		List<ServerData> s = new ArrayList<ServerData>(servers.values());
+		Collections.sort(s, new Comparator<ServerData>() {
+			@Override
+			public int compare(ServerData o1, ServerData o2) {
+				if (o1.getIpInfo().getIp().equals(o2.getIpInfo().getIp())) {
+					return o1.getServerInfo().getPublicUrl().compareTo(o2.getServerInfo().getPublicUrl());
+				}
+				return o1.getIpInfo().getIp().compareTo(o2.getIpInfo().getIp());
+			}
+		});
+		return s;
 	}
 
 	public ServerData getServerData(String serverUrl) {

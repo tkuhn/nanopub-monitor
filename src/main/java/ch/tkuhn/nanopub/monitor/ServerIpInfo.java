@@ -10,6 +10,7 @@ public class ServerIpInfo implements Serializable {
 	private Double longitude = null;
 	private String country_name = "unknown country";
 	private String city = "unknown city";
+	private String ip = "unknown IP";
 
 	public static ServerIpInfo empty = new ServerIpInfo();
 
@@ -32,4 +33,7 @@ public class ServerIpInfo implements Serializable {
 		return city;
 	}
 
+	public String getIp() {
+		return ip;
+	}
 }

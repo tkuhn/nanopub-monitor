@@ -1,6 +1,6 @@
 package ch.tkuhn.nanopub.monitor;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +22,8 @@ public class MonitorPage extends WebPage {
 
 	private static final long serialVersionUID = -2069078890268133150L;
 
+	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public MonitorPage(final PageParameters parameters) throws Exception {
@@ -33,6 +35,13 @@ public class MonitorPage extends WebPage {
 			map.setStreetViewControlEnabled(false);
 			map.setScaleControlEnabled(true);
 			map.setScrollWheelZoomEnabled(true);
+			map.setDraggingEnabled(false);
+			map.setZoomControlEnabled(false);
+			map.setMinZoom(2);
+			map.setMaxZoom(2);
+			map.setDoubleClickZoomEnabled(false);
+			map.setScrollWheelZoomEnabled(false);
+			map.setMapTypeControlEnabled(false);
 			List<GLatLng> points = new ArrayList<GLatLng>();
 			for (ServerData sd : sl.getServerData()) {
 				try {
@@ -58,7 +67,7 @@ public class MonitorPage extends WebPage {
 		}
 		add(new Label("min-nanopub-count", minNanopubCount + ""));
 
-		add(new DataView<ServerData>("rows", new ListDataProvider<ServerData>(sl.getServerData())) {
+		add(new DataView<ServerData>("rows", new ListDataProvider<ServerData>(sl.getSortedServerData())) {
 
 			private static final long serialVersionUID = 4703849210371741467L;
 
@@ -71,13 +80,13 @@ public class MonitorPage extends WebPage {
 				item.add(urlLink);
 				item.add(new Label("status", d.getStatusString()));
 				item.add(new Label("successratio", d.getSuccessRatioString()));
-				item.add(new Label("resptime", d.getAvgResponseTimeString()));
-				item.add(new Label("dist", d.getDistanceString()));
+				item.add(new Label("resptime", d.getAvgResponseTimeString() + " (" + d.getDistanceString() + ")"));
 				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
 				item.add(new Label("nanopubcount", s.getNextNanopubNo()));
+				item.add(new Label("ip", i.getIp()));
 				item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
 				item.add(new Label("version", s.getProtocolVersion()));
-				item.add(new Label("admin", s.getAdmin()));
+				item.add(new Label("pattern", getPatternString(s)));
 				item.add(new Label("description", s.getDescription()));
 			}
 
@@ -86,9 +95,16 @@ public class MonitorPage extends WebPage {
 		ServerScanner.initDaemon();
 	}
 
+	private static String getPatternString(ServerInfo si) {
+		String s = " / ";
+		if (si.getUriPattern() != null) s = si.getUriPattern() + s;
+		if (si.getHashPattern() != null) s = s + si.getHashPattern();
+		return s;
+	}
+
 	private static String formatDate(Date date) {
 		if (date == null) return "";
-		return DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG).format(date);
+		return dateFormat.format(date);
 	}
 
 }
