@@ -33,12 +33,12 @@ public class MonitorPage extends WebPage {
 		if (MonitorConf.get().showMap()) {
 			GMap map = new GMap("map");
 			map.setStreetViewControlEnabled(false);
-			map.setScaleControlEnabled(true);
-			map.setScrollWheelZoomEnabled(true);
+			map.setScaleControlEnabled(false);
+			map.setScrollWheelZoomEnabled(false);
 			map.setDraggingEnabled(false);
 			map.setZoomControlEnabled(false);
-			map.setMinZoom(2);
-			map.setMaxZoom(2);
+			map.setMinZoom(3);
+			map.setMaxZoom(3);
 			map.setDoubleClickZoomEnabled(false);
 			map.setScrollWheelZoomEnabled(false);
 			map.setMapTypeControlEnabled(false);
