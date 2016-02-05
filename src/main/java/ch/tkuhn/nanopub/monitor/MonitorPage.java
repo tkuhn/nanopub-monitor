@@ -3,7 +3,9 @@ package ch.tkuhn.nanopub.monitor;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -29,6 +31,7 @@ public class MonitorPage extends WebPage {
 	public MonitorPage(final PageParameters parameters) throws Exception {
 		super(parameters);
 		final ServerList sl = ServerList.get();
+		final Set<String> ipAddresses = new HashSet<String>();
 
 		if (MonitorConf.get().showMap()) {
 			GMap map = new GMap("map");
@@ -47,6 +50,7 @@ public class MonitorPage extends WebPage {
 				try {
 					ServerIpInfo ipInfo = sd.getIpInfo();
 					points.add(new GLatLng(ipInfo.getLatitude(), ipInfo.getLongitude()));
+					ipAddresses.add(ipInfo.getIp());
 				} catch (Exception ex) {
 					logger.error("Something went wrong while getting coordinates", ex);
 				}
@@ -58,6 +62,7 @@ public class MonitorPage extends WebPage {
 		}
 
 		add(new Label("server-count", sl.getServerCount() + ""));
+		add(new Label("server-ip-count", ipAddresses.size() + ""));
 		long minNanopubCount = 0;
 		for (ServerData sd : sl.getServerData()) {
 			ServerInfo serverInfo = sd.getServerInfo();
