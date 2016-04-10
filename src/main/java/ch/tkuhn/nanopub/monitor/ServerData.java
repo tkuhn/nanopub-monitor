@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
 
 import org.nanopub.extra.server.ServerInfo;
@@ -127,8 +128,11 @@ public class ServerData implements Serializable {
 
 	public static ServerIpInfo fetchIpInfo(String host) throws IOException {
 		if (!MonitorConf.get().isGeoIpInfoEnabled()) return ServerIpInfo.empty;
-		URL geoipUrl = new URL("http://freegeoip.net/json/" + host);
-		return new Gson().fromJson(new InputStreamReader(geoipUrl.openStream()), ServerIpInfo.class);
+		URL geoipUrl = new URL("http://freegeoip.io/json/" + host);
+		URLConnection con = geoipUrl.openConnection();
+		con.setConnectTimeout(10000);
+		con.setReadTimeout(10000);
+		return new Gson().fromJson(new InputStreamReader(con.getInputStream()), ServerIpInfo.class);
 	}
 
 	private static double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
