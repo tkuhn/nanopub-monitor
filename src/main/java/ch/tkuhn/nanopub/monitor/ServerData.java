@@ -3,8 +3,8 @@ package ch.tkuhn.nanopub.monitor;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Date;
 
 import org.nanopub.extra.server.ServerInfo;
@@ -48,8 +48,8 @@ public class ServerData implements Serializable {
 			return;
 		}
 		long now = System.currentTimeMillis();
-		if (now - lastIpInfoRetrieval > 1000 * 60 * 60 * 12) {
-			// retry every 12 hours
+		if (now - lastIpInfoRetrieval > 1000 * 60 * 10) {
+			// retry every 10 minutes
 			loadIpInfo();
 		}
 	}
@@ -128,11 +128,18 @@ public class ServerData implements Serializable {
 
 	public static ServerIpInfo fetchIpInfo(String host) throws IOException {
 		if (!MonitorConf.get().isGeoIpInfoEnabled()) return ServerIpInfo.empty;
+		ServerIpInfo serverIpInfo = null;
 		URL geoipUrl = new URL("http://freegeoip.io/json/" + host);
-		URLConnection con = geoipUrl.openConnection();
-		con.setConnectTimeout(10000);
-		con.setReadTimeout(10000);
-		return new Gson().fromJson(new InputStreamReader(con.getInputStream()), ServerIpInfo.class);
+		HttpURLConnection con = null;
+		try {
+			con = (HttpURLConnection) geoipUrl.openConnection();
+			con.setConnectTimeout(10000);
+			con.setReadTimeout(10000);
+			serverIpInfo = new Gson().fromJson(new InputStreamReader(con.getInputStream()), ServerIpInfo.class);
+		} finally {
+			if (con != null) con.disconnect();
+		}
+		return serverIpInfo;
 	}
 
 	private static double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
