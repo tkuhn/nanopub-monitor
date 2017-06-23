@@ -6,14 +6,12 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
-import java.util.Scanner;
 
 import org.nanopub.extra.server.ServerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 public class ServerData implements Serializable {
 
@@ -137,9 +135,7 @@ public class ServerData implements Serializable {
 			con = (HttpURLConnection) geoipUrl.openConnection();
 			con.setConnectTimeout(10000);
 			con.setReadTimeout(10000);
-			String jsonString = new Scanner(con.getInputStream()).useDelimiter("\\A").next();
-			LoggerFactory.getLogger(ServerData.class).info("JSON received:\n" + jsonString);
-			serverIpInfo = new Gson().fromJson(jsonString, ServerIpInfo.class);
+			serverIpInfo = new Gson().fromJson(new InputStreamReader(con.getInputStream()), ServerIpInfo.class);
 		} finally {
 			if (con != null) con.disconnect();
 		}
