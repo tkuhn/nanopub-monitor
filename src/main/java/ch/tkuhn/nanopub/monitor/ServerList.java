@@ -42,7 +42,11 @@ public class ServerList implements Serializable {
 		Collections.sort(s, new Comparator<ServerData>() {
 			@Override
 			public int compare(ServerData o1, ServerData o2) {
+				if (o1.getIpInfo().getIp() == null) return -1;
+				if (o2.getIpInfo().getIp() == null) return 1;
 				if (o1.getIpInfo().getIp().equals(o2.getIpInfo().getIp())) {
+					if (o1.getServerInfo().getPublicUrl() == null ) return -1;
+					if (o2.getServerInfo().getPublicUrl() == null) return 1;
 					return o1.getServerInfo().getPublicUrl().compareTo(o2.getServerInfo().getPublicUrl());
 				}
 				return o1.getIpInfo().getIp().compareTo(o2.getIpInfo().getIp());
