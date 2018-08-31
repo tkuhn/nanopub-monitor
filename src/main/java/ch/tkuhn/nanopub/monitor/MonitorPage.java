@@ -88,8 +88,13 @@ public class MonitorPage extends WebPage {
 				item.add(new Label("resptime", d.getAvgResponseTimeString() + " (" + d.getDistanceString() + ")"));
 				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
 				item.add(new Label("nanopubcount", s.getNextNanopubNo()));
-				item.add(new Label("ip", i.getIp()));
-				item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
+				if (i == null) {
+					item.add(new Label("ip", "unknown"));
+					item.add(new Label("location", "unknown"));
+				} else {
+					item.add(new Label("ip", i.getIp()));
+					item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
+				}
 				item.add(new Label("version", s.getProtocolVersion()));
 				item.add(new Label("pattern", getPatternString(s)));
 				item.add(new Label("description", s.getDescription()));
