@@ -129,7 +129,7 @@ public class ServerData implements Serializable {
 	public static ServerIpInfo fetchIpInfo(String host) throws IOException {
 		if (!MonitorConf.get().isGeoIpInfoEnabled()) return ServerIpInfo.empty;
 		ServerIpInfo serverIpInfo = null;
-		URL geoipUrl = new URL("https://freegeoip.net/json/" + host);
+		URL geoipUrl = new URL("http://ip-api.com/json/" + host);
 		HttpURLConnection con = null;
 		try {
 			con = (HttpURLConnection) geoipUrl.openConnection();

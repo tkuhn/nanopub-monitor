@@ -1,12 +1,12 @@
 package ch.tkuhn.nanopub.monitor;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -17,8 +17,6 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.nanopub.extra.server.ServerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wicketstuff.gmap.GMap;
-import org.wicketstuff.gmap.api.GLatLng;
 
 public class MonitorPage extends WebPage {
 
@@ -27,38 +25,23 @@ public class MonitorPage extends WebPage {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private String coordinates = "";
 
 	public MonitorPage(final PageParameters parameters) throws Exception {
 		super(parameters);
 		final ServerList sl = ServerList.get();
 		final Set<String> ipAddresses = new HashSet<String>();
-
 		if (MonitorConf.get().showMap()) {
-			GMap map = new GMap("map");
-			map.setStreetViewControlEnabled(false);
-			map.setScaleControlEnabled(false);
-			map.setScrollWheelZoomEnabled(false);
-			map.setDraggingEnabled(false);
-			map.setZoomControlEnabled(false);
-			map.setMinZoom(3);
-			map.setMaxZoom(3);
-			map.setDoubleClickZoomEnabled(false);
-			map.setScrollWheelZoomEnabled(false);
-			map.setMapTypeControlEnabled(false);
-			List<GLatLng> points = new ArrayList<GLatLng>();
 			for (ServerData sd : sl.getServerData()) {
 				try {
 					ServerIpInfo ipInfo = sd.getIpInfo();
-					points.add(new GLatLng(ipInfo.getLatitude(), ipInfo.getLongitude()));
+					coordinates += "\"" + ipInfo.getLatitude() + "," + ipInfo.getLongitude() + "\",";
 					ipAddresses.add(ipInfo.getIp());
 				} catch (Exception ex) {
 					logger.error("Something went wrong while getting coordinates", ex);
 				}
 			}
-			map.fitMarkers(points, true);
-			add(map);
-		} else {
-			add(new Label("map"));
+			coordinates = coordinates.replaceFirst(",$", "");
 		}
 
 		add(new Label("server-count", sl.getServerCount() + ""));
@@ -103,6 +86,12 @@ public class MonitorPage extends WebPage {
 		});
 
 		ServerScanner.initDaemon();
+	}
+
+	@Override
+	public void renderHead(IHeaderResponse response) {
+	    super.renderHead(response);
+	    response.render(JavaScriptReferenceHeaderItem.forScript("var points = [" + coordinates + "];", null));
 	}
 
 	private static String getPatternString(ServerInfo si) {

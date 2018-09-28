@@ -104,11 +104,14 @@ strong {
 }
 
 #map {
-	height: 350px;
+	height: 400px;
+	padding-top: 5px;
 	margin-top: 15px;
 	margin-bottom: 15px;
 	margin-right: auto;
 	margin-left: auto;
+	text-align: center;
+	background: #48d;
 }
 
 p {

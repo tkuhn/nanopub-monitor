@@ -6,6 +6,8 @@
 <title>Nanopub Monitor</title>
 <link rel="stylesheet" href="style.css" type="text/css" media="screen" title="Stylesheet" />
 <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+<script src="raphael.js"></script>
+<script src="world.js"></script>
 </head>
 
 <body>
@@ -18,7 +20,8 @@ running on <span wicket:id="server-ip-count"></span> <strong>distinct physical s
 containing at least <span wicket:id="min-nanopub-count"></span> <strong>unique nanopubs</strong>
 </p>
 
-<div wicket:id="map" id="map"></div>
+<div id="map"></div>
+<script src="drawmap.js"></script>
 
 <div class="servertable">
 <table>

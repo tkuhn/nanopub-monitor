@@ -6,11 +6,11 @@ public class ServerIpInfo implements Serializable {
 
 	private static final long serialVersionUID = 4805668042976093282L;
 
-	private Double latitude = null;
-	private Double longitude = null;
-	private String country_name = "unknown country";
+	private Double lat = null;
+	private Double lon = null;
+	private String country = "unknown country";
 	private String city = "unknown city";
-	private String ip = "unknown IP";
+	private String query = "unknown IP";
 
 	public static ServerIpInfo empty = new ServerIpInfo();
 
@@ -18,15 +18,15 @@ public class ServerIpInfo implements Serializable {
 	}
 
 	public Double getLatitude() {
-		return latitude;
+		return lat;
 	}
 
 	public Double getLongitude() {
-		return longitude;
+		return lon;
 	}
 
 	public String getCountryName() {
-		return country_name;
+		return country;
 	}
 
 	public String getCity() {
@@ -34,6 +34,6 @@ public class ServerIpInfo implements Serializable {
 	}
 
 	public String getIp() {
-		return ip;
+		return query;
 	}
 }
