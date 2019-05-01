@@ -19,7 +19,7 @@ import org.nanopub.NanopubImpl;
 import org.nanopub.extra.server.NanopubServerUtils;
 import org.nanopub.extra.server.ServerInfo;
 import org.nanopub.trusty.TrustyNanopubUtils;
-import org.openrdf.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 
 public class ServerScanner implements ICode {
