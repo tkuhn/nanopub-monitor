@@ -77,6 +77,22 @@
 			<artifactId>guava</artifactId>
 			<version>19.0</version>
 		</dependency>
+    <dependency>
+      <groupId>org.eclipse.rdf4j</groupId>
+      <artifactId>rdf4j-rio-trix</artifactId>
+      <version>2.4.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.rdf4j</groupId>
+      <artifactId>rdf4j-rio-nquads</artifactId>
+      <version>2.4.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.rdf4j</groupId>
+      <artifactId>rdf4j-rio-jsonld</artifactId>
+      <version>2.4.4</version>
+    </dependency>
+    
 	</dependencies>
 	<build>
 		<finalName>nanopub-monitor</finalName>
