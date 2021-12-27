@@ -1,6 +1,7 @@
 package ch.tkuhn.nanopub.monitor;
 
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.Random;
 
 import net.trustyuri.TrustyUriUtils;
@@ -13,7 +14,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.wicket.util.thread.ICode;
 import org.apache.wicket.util.thread.Task;
-import org.apache.wicket.util.time.Duration;
 import org.nanopub.Nanopub;
 import org.nanopub.NanopubImpl;
 import org.nanopub.extra.server.NanopubServerUtils;
@@ -41,7 +41,7 @@ public class ServerScanner implements ICode {
 		scanTask = new Task("server-scanner");
 		scanTask.setDaemon(true);
 		singleton = new ServerScanner();
-		scanTask.run(Duration.seconds(MonitorConf.get().getScanFreq()), singleton);
+		scanTask.run(Duration.ofSeconds(MonitorConf.get().getScanFreq()), singleton);
 	}
 
 	private Logger logger;

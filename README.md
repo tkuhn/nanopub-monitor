@@ -1,6 +1,4 @@
 Nanopub Monitor
 ===============
 
-An application to monitor the nanopublication server network.
-
-_under construction..._
+A webapp to monitor the nanopublication server network.
