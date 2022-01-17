@@ -4,12 +4,24 @@ import org.eclipse.rdf4j.model.IRI;
 
 public class NanopubService {
 
-	private IRI serviceIri;
-	private IRI typeIri;
+	private final IRI serviceIri;
+	private final IRI typeIri;
 
 	public NanopubService(IRI serviceIri, IRI typeIri) {
 		this.serviceIri = serviceIri;
 		this.typeIri = typeIri;
+	}
+
+	public IRI getServiceIri() {
+		return serviceIri;
+	}
+
+	public IRI getTypeIri() {
+		return typeIri;
+	}
+
+	public String getTypeLabel() {
+		return typeIri.stringValue().replaceFirst("^.*/([^/]+)$", "$1");
 	}
 
 	@Override

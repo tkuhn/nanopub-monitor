@@ -14,7 +14,6 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.markup.repeater.data.ListDataProvider;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.nanopub.extra.server.ServerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +52,12 @@ public class MonitorPage extends WebPage {
 
 			public void populateItem(final Item<ServerData> item) {
 				ServerData d = item.getModelObject();
-				ServerInfo s = d.getServerInfo();
 				ServerIpInfo i = d.getIpInfo();
-				ExternalLink urlLink = new ExternalLink("urllink", s.getPublicUrl());
-				urlLink.add(new Label("url", s.getPublicUrl()));
+				ExternalLink urlLink = new ExternalLink("urllink", d.getServiceId());
+				urlLink.add(new Label("url", d.getServiceId()));
 				item.add(urlLink);
-				ExternalLink typeLink = new ExternalLink("typelink", "https://github.com/tkuhn/nanopub-server#service");
-				typeLink.add(new Label("type", "Nanopub Server"));
+				ExternalLink typeLink = new ExternalLink("typelink", d.getService().getTypeIri().stringValue());
+				typeLink.add(new Label("type", d.getService().getTypeLabel()));
 				item.add(typeLink);
 				item.add(new Label("status", d.getStatusString()));
 				item.add(new Label("successratio", d.getSuccessRatioString()));
@@ -72,9 +70,9 @@ public class MonitorPage extends WebPage {
 					item.add(new Label("ip", i.getIp()));
 					item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
 				}
-				item.add(new Label("parameters", getPatternString(s)));
-				item.add(new Label("nanopubcount", s.getNextNanopubNo()));
-				item.add(new Label("description", s.getDescription()));
+				item.add(new Label("parameters", d.getParameterString()));
+				item.add(new Label("nanopubcount", d.getNanopubCountString()));
+				item.add(new Label("description", d.getDescription()));
 			}
 
 		});
@@ -86,13 +84,6 @@ public class MonitorPage extends WebPage {
 	public void renderHead(IHeaderResponse response) {
 	    super.renderHead(response);
 	    response.render(JavaScriptReferenceHeaderItem.forScript("var points = [" + coordinates + "];", null));
-	}
-
-	private static String getPatternString(ServerInfo si) {
-		String s = " / ";
-		if (si.getUriPattern() != null) s = si.getUriPattern() + s;
-		if (si.getHashPattern() != null) s = s + si.getHashPattern();
-		return s;
 	}
 
 	private static String formatDate(Date date) {

@@ -59,12 +59,13 @@ public class ServerList implements Serializable {
 		Collections.sort(s, new Comparator<ServerData>() {
 			@Override
 			public int compare(ServerData o1, ServerData o2) {
+				if (!o1.getService().getTypeIri().equals(o2.getService().getTypeIri())) {
+					return o2.getService().getTypeIri().toString().compareTo(o1.getService().getTypeIri().toString());
+				}
 				if (o1.getIpInfo() == null || o1.getIpInfo().getIp() == null) return -1;
 				if (o2.getIpInfo() == null || o2.getIpInfo().getIp() == null) return 1;
 				if (o1.getIpInfo().getIp().equals(o2.getIpInfo().getIp())) {
-					if (o1.getServerInfo() == null || o1.getServerInfo().getPublicUrl() == null ) return -1;
-					if (o2.getServerInfo() == null || o2.getServerInfo().getPublicUrl() == null) return 1;
-					return o1.getServerInfo().getPublicUrl().compareTo(o2.getServerInfo().getPublicUrl());
+					return o1.getServiceId().compareTo(o2.getServiceId());
 				}
 				return o1.getIpInfo().getIp().compareTo(o2.getIpInfo().getIp());
 			}
@@ -104,7 +105,7 @@ public class ServerList implements Serializable {
 				if (servers.containsKey(s)) {
 					servers.get(s).update(si);
 				} else {
-					servers.put(s, new ServerData(si));
+					servers.put(s, new ServerData(s, si));
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -148,7 +149,9 @@ public class ServerList implements Serializable {
 							if (!(st.getObject() instanceof IRI)) continue; 
 							if (st.getObject().stringValue().equals("http://purl.org/nanopub/x/NanopubService")) continue;
 							NanopubService ns = new NanopubService((IRI) st.getSubject(), (IRI) st.getObject());
-							System.err.println("Nanopub service discovered: " + ns);
+							if (!servers.containsKey(ns)) {
+								servers.put(ns, new ServerData(ns, null));
+							}
 						}
 					}
 				}

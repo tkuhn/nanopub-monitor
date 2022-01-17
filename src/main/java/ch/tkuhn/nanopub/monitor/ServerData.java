@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nanopub.extra.server.ServerInfo;
 import org.slf4j.Logger;
@@ -19,7 +21,8 @@ public class ServerData implements Serializable {
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private ServerInfo info;
+	private NanopubService service;
+	private Object info;
 	private ServerIpInfo ipInfo;
 	private long lastIpInfoRetrieval;
 	private Date lastSeenOk;
@@ -30,12 +33,13 @@ public class ServerData implements Serializable {
 	int countSuccess = 0;
 	int countFailure = 0;
 
-	public ServerData(ServerInfo info) {
+	public ServerData(NanopubService service, Object info) {
+		this.service = service;
 		update(info);
 		getIpInfo();
 	}
 
-	public void update(ServerInfo info) {
+	public void update(Object info) {
 		if (info != null) {
 			this.info = info;
 		}
@@ -54,7 +58,15 @@ public class ServerData implements Serializable {
 		}
 	}
 
-	public ServerInfo getServerInfo() {
+	public NanopubService getService() {
+		return service;
+	}
+
+	public String getServiceId() {
+		return service.getServiceIri().stringValue();
+	}
+
+	public Object getServerInfo() {
 		return info;
 	}
 
@@ -68,7 +80,7 @@ public class ServerData implements Serializable {
 	private void loadIpInfo() {
 		lastIpInfoRetrieval = System.currentTimeMillis();
 		try {
-			ipInfo = fetchIpInfo(new URL(info.getPublicUrl()).getHost());
+			ipInfo = fetchIpInfo(new URL(service.getServiceIri().stringValue()).getHost());
 		} catch (Exception ex) {
 			logger.error(ex.getMessage(), ex);
 			if (ipInfo == null) {
@@ -84,7 +96,7 @@ public class ServerData implements Serializable {
 	public void reportTestFailure(String message) {
 		status = message;
 		countFailure++;
-		logger.info("Test result: " + info.getPublicUrl() + " " + getStatusString());
+		logger.info("Test result: " + service.getServiceIri() + " " + getStatusString());
 	}
 
 	public void reportTestSuccess(long responseTime) {
@@ -92,7 +104,7 @@ public class ServerData implements Serializable {
 		status = "OK";
 		totalResponseTime += responseTime;
 		countSuccess++;
-		logger.info("Test result: " + info.getPublicUrl() + " " + getStatusString() + " " + responseTime + "ms");
+		logger.info("Test result: " + service.getServiceIri() + " " + getStatusString() + " " + responseTime + "ms");
 	}
 
 	public String getStatusString() {
@@ -126,8 +138,36 @@ public class ServerData implements Serializable {
 		return distanceString;
 	}
 
+	public String getParameterString() {
+		if (info instanceof ServerInfo) {
+			ServerInfo si = (ServerInfo) info;
+			String s = " / ";
+			if (si.getUriPattern() != null) s = si.getUriPattern() + s;
+			if (si.getHashPattern() != null) s = s + si.getHashPattern();
+			return s;
+		}
+		return "";
+	}
+
+	public String getNanopubCountString() {
+		if (info instanceof ServerInfo) {
+			return ((ServerInfo) info).getNextNanopubNo() + "";
+		}
+		return "";
+	}
+
+	public String getDescription() {
+		if (info instanceof ServerInfo) {
+			return ((ServerInfo) info).getDescription();
+		}
+		return "";
+	}
+
+	private static Map<String,ServerIpInfo> ipInfoMap = new HashMap<>();
+
 	public static ServerIpInfo fetchIpInfo(String host) throws IOException {
 		if (!MonitorConf.get().isGeoIpInfoEnabled()) return ServerIpInfo.empty;
+		if (ipInfoMap.containsKey(host)) return ipInfoMap.get(host);
 		ServerIpInfo serverIpInfo = null;
 		URL geoipUrl = new URL("http://ip-api.com/json/" + host);
 		HttpURLConnection con = null;
@@ -136,6 +176,7 @@ public class ServerData implements Serializable {
 			con.setConnectTimeout(10000);
 			con.setReadTimeout(10000);
 			serverIpInfo = new Gson().fromJson(new InputStreamReader(con.getInputStream()), ServerIpInfo.class);
+			ipInfoMap.put(host, serverIpInfo);
 		} finally {
 			if (con != null) con.disconnect();
 		}

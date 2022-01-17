@@ -64,46 +64,48 @@ public class ServerScanner implements ICode {
 		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(10 * 1000).build();
 		HttpClient c = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 		for (ServerData d : ServerList.get().getServerData()) {
-			logger.info("Testing server " + d.getServerInfo().getPublicUrl() + "...");
+			logger.info("Testing server " + d.getServiceId() + "...");
 			stillAlive();
-			ServerInfo i = d.getServerInfo();
-			if (i.getNextNanopubNo() == 0) continue;
-			try {
-				long npNo = (long) (random.nextDouble() * (i.getNextNanopubNo()));
-				logger.info("Trying to retrieve nanopub number " + npNo);
-				int pageNo = (int) (npNo / i.getPageSize()) + 1;
-				int rowNo = (int) (npNo % i.getPageSize());
-				int r = 0;
-				for (String nanopubUri : NanopubServerUtils.loadNanopubUriList(i, pageNo)) {
-					if (rowNo < r) {
-						r++;
-						continue;
-					}
-					String ac = TrustyUriUtils.getArtifactCode(nanopubUri);
-					HttpGet get = new HttpGet(i.getPublicUrl() + ac);
-					get.setHeader("Accept", "application/trig");
-					StopWatch watch = new StopWatch();
-					watch.start();
-					HttpResponse resp = c.execute(get);
-					watch.stop();
-					if (!wasSuccessful(resp)) {
-						logger.info("Test failed. HTTP code " + resp.getStatusLine().getStatusCode());
-						d.reportTestFailure("DOWN");
-					} else {
-						InputStream in = resp.getEntity().getContent();
-						Nanopub np = new NanopubImpl(in, RDFFormat.TRIG);
-						if (TrustyNanopubUtils.isValidTrustyNanopub(np)) {
-							d.reportTestSuccess(watch.getTime());
-						} else {
-							logger.info("Test failed. Not a trusty nanopub: " + np.getUri());
-							d.reportTestFailure("BROKEN");
+			if (d.getServerInfo() instanceof ServerInfo) {
+				ServerInfo i = (ServerInfo) d.getServerInfo();
+				if (i.getNextNanopubNo() == 0) continue;
+				try {
+					long npNo = (long) (random.nextDouble() * (i.getNextNanopubNo()));
+					logger.info("Trying to retrieve nanopub number " + npNo);
+					int pageNo = (int) (npNo / i.getPageSize()) + 1;
+					int rowNo = (int) (npNo % i.getPageSize());
+					int r = 0;
+					for (String nanopubUri : NanopubServerUtils.loadNanopubUriList(i, pageNo)) {
+						if (rowNo < r) {
+							r++;
+							continue;
 						}
+						String ac = TrustyUriUtils.getArtifactCode(nanopubUri);
+						HttpGet get = new HttpGet(i.getPublicUrl() + ac);
+						get.setHeader("Accept", "application/trig");
+						StopWatch watch = new StopWatch();
+						watch.start();
+						HttpResponse resp = c.execute(get);
+						watch.stop();
+						if (!wasSuccessful(resp)) {
+							logger.info("Test failed. HTTP code " + resp.getStatusLine().getStatusCode());
+							d.reportTestFailure("DOWN");
+						} else {
+							InputStream in = resp.getEntity().getContent();
+							Nanopub np = new NanopubImpl(in, RDFFormat.TRIG);
+							if (TrustyNanopubUtils.isValidTrustyNanopub(np)) {
+								d.reportTestSuccess(watch.getTime());
+							} else {
+								logger.info("Test failed. Not a trusty nanopub: " + np.getUri());
+								d.reportTestFailure("BROKEN");
+							}
+						}
+						break;
 					}
-					break;
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					d.reportTestFailure("INACCESSIBLE");
 				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				d.reportTestFailure("INACCESSIBLE");
 			}
 		}
 	}
