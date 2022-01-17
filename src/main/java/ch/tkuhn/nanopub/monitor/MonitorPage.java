@@ -62,7 +62,11 @@ public class MonitorPage extends WebPage {
 				typeLink.add(new Label("type", d.getService().getTypeLabel()));
 				typeLink.add(new AttributeModifier("style", "background: " + d.getService().getMapColor()));
 				item.add(typeLink);
-				item.add(new Label("status", d.getStatusString()));
+				Label statusLabel = new Label("status", d.getStatusString());
+				if (!d.getStatusString().equals("OK")) {
+					statusLabel.add(new AttributeModifier("style", "color: red"));
+				}
+				item.add(statusLabel);
 				item.add(new Label("successratio", d.getSuccessRatioString()));
 				item.add(new Label("resptime", d.getAvgResponseTimeString() + " (" + d.getDistanceString() + ")"));
 				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
