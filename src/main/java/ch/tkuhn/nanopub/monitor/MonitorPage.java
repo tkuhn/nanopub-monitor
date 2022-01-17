@@ -24,7 +24,7 @@ public class MonitorPage extends WebPage {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
-	private String coordinates = "";
+	private String points = "";
 
 	public MonitorPage(final PageParameters parameters) throws Exception {
 		super(parameters);
@@ -34,13 +34,14 @@ public class MonitorPage extends WebPage {
 			for (ServerData sd : sl.getServerData()) {
 				try {
 					ServerIpInfo ipInfo = sd.getIpInfo();
-					coordinates += "\"" + ipInfo.getLatitude() + "," + ipInfo.getLongitude() + "\",";
+					NanopubService s = sd.getService();
+					points += "[\"" + ipInfo.getLatitude() + "," + ipInfo.getLongitude() + "\",\"" + s.getMapColor() + "\",[" + s.getMapOffsetX() + "," + s.getMapOffsetY() + "]],";
 					ipAddresses.add(ipInfo.getIp());
 				} catch (Exception ex) {
 					logger.error("Something went wrong while getting coordinates", ex);
 				}
 			}
-			coordinates = coordinates.replaceFirst(",$", "");
+			points = points.replaceFirst(",$", "");
 		}
 
 		add(new Label("server-count", sl.getServerCount() + ""));
@@ -83,7 +84,7 @@ public class MonitorPage extends WebPage {
 	@Override
 	public void renderHead(IHeaderResponse response) {
 	    super.renderHead(response);
-	    response.render(JavaScriptReferenceHeaderItem.forScript("var points = [" + coordinates + "];", null));
+	    response.render(JavaScriptReferenceHeaderItem.forScript("var points = [" + points + "];", null));
 	}
 
 	private static String formatDate(Date date) {

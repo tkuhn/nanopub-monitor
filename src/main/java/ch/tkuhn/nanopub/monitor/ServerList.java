@@ -94,13 +94,12 @@ public class ServerList implements Serializable {
     }
 
 	private static final ValueFactory vf = SimpleValueFactory.getInstance();
-	private static final IRI nanopubServerTypeIri = vf.createIRI("https://github.com/tkuhn/nanopub-server#service");
 
 	private void refreshFromNanopubServerPeers() {
 		ServerIterator serverIterator = new ServerIterator();
 		while (serverIterator.hasNext()) {
 			ServerInfo si = serverIterator.next();
-			NanopubService s = new NanopubService(vf.createIRI(si.getPublicUrl()), nanopubServerTypeIri);
+			NanopubService s = new NanopubService(vf.createIRI(si.getPublicUrl()), NanopubService.NANOPUB_SERVER_TYPE_IRI);
 			try {
 				if (servers.containsKey(s)) {
 					servers.get(s).update(si);

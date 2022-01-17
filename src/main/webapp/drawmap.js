@@ -28,22 +28,22 @@ Raphael("map", 1000, 400, function () {
   };
   var dot = r.circle();
 
-  function go(attr){
+  function go(attr,color,offset){
     if(attr.cx && attr.cy){
 
        dot.paper.add([{
            type: "circle",
-           cx: attr.cx,
-           cy: attr.cy,
-           r: 5
-       }]).attr({"stroke": "#000", "stroke-width": "1px","fill":"orange"});
+           cx: attr.cx + offset[0],
+           cy: attr.cy + offset[1],
+           r: 4
+       }]).attr({"stroke": "#000", "stroke-width": "0.5px","fill":color});
 
     }
   }
 
   for (var i=0;i<points.length;i++){ 
-    var txt = points[i];
+    var txt = points[i][0];
     var attr = world.parseLatLon(txt);
-    go(attr);
+    go(attr,points[i][1],points[i][2]);
   }
 });
