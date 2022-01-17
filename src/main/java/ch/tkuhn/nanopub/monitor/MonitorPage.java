@@ -66,11 +66,13 @@ public class MonitorPage extends WebPage {
 				ExternalLink urlLink = new ExternalLink("urllink", s.getPublicUrl());
 				urlLink.add(new Label("url", s.getPublicUrl()));
 				item.add(urlLink);
+				ExternalLink typeLink = new ExternalLink("typelink", "https://github.com/tkuhn/nanopub-server#service");
+				typeLink.add(new Label("type", "Nanopub Server"));
+				item.add(typeLink);
 				item.add(new Label("status", d.getStatusString()));
 				item.add(new Label("successratio", d.getSuccessRatioString()));
 				item.add(new Label("resptime", d.getAvgResponseTimeString() + " (" + d.getDistanceString() + ")"));
 				item.add(new Label("lastseen", formatDate(d.getLastSeenDate())));
-				item.add(new Label("nanopubcount", s.getNextNanopubNo()));
 				if (i == null) {
 					item.add(new Label("ip", "unknown"));
 					item.add(new Label("location", "unknown"));
@@ -78,8 +80,8 @@ public class MonitorPage extends WebPage {
 					item.add(new Label("ip", i.getIp()));
 					item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
 				}
-				item.add(new Label("version", s.getProtocolVersion()));
-				item.add(new Label("pattern", getPatternString(s)));
+				item.add(new Label("parameters", getPatternString(s)));
+				item.add(new Label("nanopubcount", s.getNextNanopubNo()));
 				item.add(new Label("description", s.getDescription()));
 			}
 
