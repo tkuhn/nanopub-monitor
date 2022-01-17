@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.nanopub.extra.server.ServerInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +65,10 @@ public class ServerData implements Serializable {
 
 	public String getServiceId() {
 		return service.getServiceIri().stringValue();
+	}
+
+	public boolean hasServiceType(IRI type) {
+		return service.getTypeIri().equals(type);
 	}
 
 	public Object getServerInfo() {
@@ -145,13 +150,6 @@ public class ServerData implements Serializable {
 			if (si.getUriPattern() != null) s = si.getUriPattern() + s;
 			if (si.getHashPattern() != null) s = s + si.getHashPattern();
 			return s;
-		}
-		return "";
-	}
-
-	public String getNanopubCountString() {
-		if (info instanceof ServerInfo) {
-			return ((ServerInfo) info).getNextNanopubNo() + "";
 		}
 		return "";
 	}

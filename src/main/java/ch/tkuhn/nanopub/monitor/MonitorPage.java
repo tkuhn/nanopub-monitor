@@ -78,7 +78,6 @@ public class MonitorPage extends WebPage {
 					item.add(new Label("location", i.getCity() + ", " + i.getCountryName()));
 				}
 				item.add(new Label("parameters", d.getParameterString()));
-				item.add(new Label("nanopubcount", d.getNanopubCountString()));
 				item.add(new Label("description", d.getDescription()));
 			}
 

@@ -1,10 +1,10 @@
 package ch.tkuhn.nanopub.monitor;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.time.Duration;
 import java.util.Random;
-
-import net.trustyuri.TrustyUriUtils;
 
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.http.HttpResponse;
@@ -14,13 +14,17 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.wicket.util.thread.ICode;
 import org.apache.wicket.util.thread.Task;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.nanopub.Nanopub;
 import org.nanopub.NanopubImpl;
 import org.nanopub.extra.server.NanopubServerUtils;
 import org.nanopub.extra.server.ServerInfo;
 import org.nanopub.trusty.TrustyNanopubUtils;
-import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
+
+import com.opencsv.CSVReader;
+
+import net.trustyuri.TrustyUriUtils;
 
 public class ServerScanner implements ICode {
 
@@ -66,7 +70,7 @@ public class ServerScanner implements ICode {
 		for (ServerData d : ServerList.get().getServerData()) {
 			logger.info("Testing server " + d.getServiceId() + "...");
 			stillAlive();
-			if (d.getServerInfo() instanceof ServerInfo) {
+			if (d.hasServiceType(NanopubService.NANOPUB_SERVER_TYPE_IRI)) {
 				ServerInfo i = (ServerInfo) d.getServerInfo();
 				if (i.getNextNanopubNo() == 0) continue;
 				try {
@@ -101,6 +105,85 @@ public class ServerScanner implements ICode {
 							}
 						}
 						break;
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					d.reportTestFailure("INACCESSIBLE");
+				}
+			} else if (d.hasServiceType(NanopubService.GRLC_SERVICE_TYPE_IRI)) {
+				logger.info("Trying to access " + d.getServiceId() + "get_nanopub_count...");
+				try {
+					HttpGet get = new HttpGet(d.getServiceId() + "get_nanopub_count");
+					get.setHeader("Accept", "text/csv");
+					StopWatch watch = new StopWatch();
+					watch.start();
+					HttpResponse resp = c.execute(get);
+					watch.stop();
+					if (!wasSuccessful(resp)) {
+						logger.info("Test failed. HTTP code " + resp.getStatusLine().getStatusCode());
+						d.reportTestFailure("DOWN");
+					} else {
+						CSVReader csvReader = null;
+						try {
+							csvReader = new CSVReader(new BufferedReader(new InputStreamReader(resp.getEntity().getContent())));
+							String[] line = null;
+							int n = 0;
+							while ((line = csvReader.readNext()) != null) {
+								n++;
+								if (n == 1) {
+									// ignore header line
+								} else {
+									if (line[0].matches("[0-9]{8,}")) {
+										d.reportTestSuccess(watch.getTime());
+									} else {
+										d.reportTestFailure("BROKEN");
+									}
+									break;
+								}
+							}
+						} catch (Exception ex) {
+							logger.info("Test failed. Exception: " + ex.getMessage());
+							d.reportTestFailure("BROKEN");
+						} finally {
+							if (csvReader != null) csvReader.close();
+						}
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					d.reportTestFailure("INACCESSIBLE");
+				}
+			} else if (d.hasServiceType(NanopubService.LDF_SERVICE_TYPE_IRI)) {
+				logger.info("Trying to access " + d.getServiceId() + "?object=http%3A%2F%2Fwww.nanopub.org%2Fnschema%23Nanopublication...");
+				try {
+					HttpGet get = new HttpGet(d.getServiceId() + "?object=http%3A%2F%2Fwww.nanopub.org%2Fnschema%23Nanopublication");
+					get.setHeader("Accept", "application/n-quads");
+					StopWatch watch = new StopWatch();
+					watch.start();
+					HttpResponse resp = c.execute(get);
+					watch.stop();
+					if (!wasSuccessful(resp)) {
+						logger.info("Test failed. HTTP code " + resp.getStatusLine().getStatusCode());
+						d.reportTestFailure("DOWN");
+					} else {
+						BufferedReader reader = null;
+						try {
+							reader = new BufferedReader(new InputStreamReader(resp.getEntity().getContent()));
+							String line = null;
+							int count = 0;
+							while ((line = reader.readLine()) != null) {
+								if (line.contains(" <http://www.nanopub.org/nschema#Nanopublication> ")) count = count + 1;
+							}
+							if (count >= 100) {
+								d.reportTestSuccess(watch.getTime());
+							} else {
+								d.reportTestFailure("BROKEN");
+							}
+						} catch (Exception ex) {
+							logger.info("Test failed. Exception: " + ex.getMessage());
+							d.reportTestFailure("BROKEN");
+						} finally {
+							if (reader != null) reader.close();
+						}
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
