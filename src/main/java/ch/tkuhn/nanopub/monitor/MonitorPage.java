@@ -46,14 +46,6 @@ public class MonitorPage extends WebPage {
 
 		add(new Label("server-count", sl.getServerCount() + ""));
 		add(new Label("server-ip-count", ipAddresses.size() + ""));
-		long minNanopubCount = 0;
-		for (ServerData sd : sl.getServerData()) {
-			ServerInfo serverInfo = sd.getServerInfo();
-			if (serverInfo.getNextNanopubNo() > minNanopubCount) {
-				minNanopubCount = serverInfo.getNextNanopubNo();
-			}
-		}
-		add(new Label("min-nanopub-count", minNanopubCount + ""));
 
 		add(new DataView<ServerData>("rows", new ListDataProvider<ServerData>(sl.getSortedServerData())) {
 
