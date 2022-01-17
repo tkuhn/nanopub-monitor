@@ -63,31 +63,31 @@ hr {
 }
 
 a {
-	color: #22b;
+	color: #222;
 	text-decoration: none;
 	background-color: transparent;
 }
 
 a:hover {
-	color: #66d;
+	color: #666;
 }
 
 a:active {
-	color: #66d;
+	color: #666;
 }
 
 a.button {
 	font-size: 10pt;
 	padding: 2px 10px;
 	margin: 3px;
-	background-color: #66d;
+	background-color: #666;
 	color: #fff;
 	font-weight: bold;
 	display:inline-block;
 }
 
 a.button:hover {
-	background-color: #22d;
+	background-color: #222;
 }
 
 strong {

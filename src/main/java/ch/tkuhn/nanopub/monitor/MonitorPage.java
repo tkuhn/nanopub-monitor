@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
@@ -59,6 +60,7 @@ public class MonitorPage extends WebPage {
 				item.add(urlLink);
 				ExternalLink typeLink = new ExternalLink("typelink", d.getService().getTypeIri().stringValue());
 				typeLink.add(new Label("type", d.getService().getTypeLabel()));
+				typeLink.add(new AttributeModifier("style", "background: " + d.getService().getMapColor()));
 				item.add(typeLink);
 				item.add(new Label("status", d.getStatusString()));
 				item.add(new Label("successratio", d.getSuccessRatioString()));
