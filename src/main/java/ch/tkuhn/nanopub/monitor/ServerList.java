@@ -19,6 +19,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Statement;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.nanopub.Nanopub;
 import org.nanopub.extra.server.GetNanopub;
@@ -42,7 +44,7 @@ public class ServerList implements Serializable {
 		return serverList;
 	}
 
-	private static Map<String,ServerData> servers = new HashMap<String,ServerData>();
+	private static Map<NanopubService,ServerData> servers = new HashMap<NanopubService,ServerData>();
 
 	private ServerList() {
 		refresh();
@@ -90,21 +92,24 @@ public class ServerList implements Serializable {
 		refreshFromGrlc();
     }
 
+	private static final ValueFactory vf = SimpleValueFactory.getInstance();
+	private static final IRI nanopubServerTypeIri = vf.createIRI("https://github.com/tkuhn/nanopub-server#service");
+
 	private void refreshFromNanopubServerPeers() {
 		ServerIterator serverIterator = new ServerIterator();
 		while (serverIterator.hasNext()) {
 			ServerInfo si = serverIterator.next();
-			String url = si.getPublicUrl();
+			NanopubService s = new NanopubService(vf.createIRI(si.getPublicUrl()), nanopubServerTypeIri);
 			try {
-				if (servers.containsKey(url)) {
-					servers.get(url).update(si);
+				if (servers.containsKey(s)) {
+					servers.get(s).update(si);
 				} else {
-					servers.put(url, new ServerData(si));
+					servers.put(s, new ServerData(si));
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				if (servers.containsKey(url)) {
-					servers.get(url).update(null);
+				if (servers.containsKey(s)) {
+					servers.get(s).update(null);
 				}
 			}
 		}

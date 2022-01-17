@@ -24,4 +24,9 @@ public class NanopubService {
 		return serviceIri.stringValue() + " (" + typeIri + ")";
 	}
 
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+
 }
