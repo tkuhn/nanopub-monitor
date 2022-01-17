@@ -106,6 +106,24 @@ public class ServerScanner implements ICode {
 					ex.printStackTrace();
 					d.reportTestFailure("INACCESSIBLE");
 				}
+			} else {
+				logger.info("Trying to access " + d.getServiceId() + "...");
+				try {
+					HttpGet get = new HttpGet(d.getServiceId());
+					StopWatch watch = new StopWatch();
+					watch.start();
+					HttpResponse resp = c.execute(get);
+					watch.stop();
+					if (!wasSuccessful(resp)) {
+						logger.info("Test failed. HTTP code " + resp.getStatusLine().getStatusCode());
+						d.reportTestFailure("DOWN");
+					} else {
+						d.reportTestSuccess(watch.getTime());
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					d.reportTestFailure("INACCESSIBLE");
+				}
 			}
 		}
 	}
