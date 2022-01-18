@@ -92,7 +92,7 @@ public class MonitorPage extends WebPage {
 	    response.render(JavaScriptReferenceHeaderItem.forScript("var points = [" + points + "];", null));
 	}
 
-	private static String formatDate(Date date) {
+	static String formatDate(Date date) {
 		if (date == null) return "";
 		return dateFormat.format(date);
 	}

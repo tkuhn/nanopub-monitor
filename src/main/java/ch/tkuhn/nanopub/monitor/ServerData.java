@@ -116,9 +116,26 @@ public class ServerData implements Serializable {
 		return status;
 	}
 
+	public Integer getAvgResponseTimeInMs() {
+		if (countSuccess == 0) return null;
+		return (int) (totalResponseTime / (float) countSuccess);
+	}
+
 	public String getAvgResponseTimeString() {
-		if (countSuccess == 0) return "?";
-		return (int) (totalResponseTime / (float) countSuccess) + " ms";
+		Integer respTime = getAvgResponseTimeInMs();
+		if (respTime == null) {
+			return "?";
+		} else {
+			return respTime + " ms";
+		}
+	}
+
+	public Float getSuccessRatio() {
+		if (countSuccess + countFailure > 0) {
+			return (float) countSuccess / (countSuccess + countFailure);
+		} else {
+			return null;
+		}
 	}
 
 	public String getSuccessRatioString() {
@@ -131,16 +148,24 @@ public class ServerData implements Serializable {
 
 	public String getDistanceString() {
 		if (distanceString == null) {
-			ServerIpInfo monitorIpInfo = ServerList.get().getMonitorIpInfo();
-			if (monitorIpInfo == null) return "?";
-			ServerIpInfo serverIpInfo = getIpInfo();
-			Double sLat = serverIpInfo.getLatitude();
-			Double sLng = serverIpInfo.getLongitude();
-			if (sLat == null || sLng == null) return "?";
-			int distKm = (int) calculateDistance(sLat, sLng, monitorIpInfo.getLatitude(), monitorIpInfo.getLongitude());
-			distanceString = distKm + " km";
+			Integer distKm = getDistanceInKm();
+			if (distKm == null) {
+				distanceString = "?";
+			} else {
+				distanceString = distKm + " km";
+			}
 		}
 		return distanceString;
+	}
+
+	public Integer getDistanceInKm() {
+		ServerIpInfo monitorIpInfo = ServerList.get().getMonitorIpInfo();
+		if (monitorIpInfo == null) return null;
+		ServerIpInfo serverIpInfo = getIpInfo();
+		Double sLat = serverIpInfo.getLatitude();
+		Double sLng = serverIpInfo.getLongitude();
+		if (sLat == null || sLng == null) return null;
+		return (int) calculateDistance(sLat, sLng, monitorIpInfo.getLatitude(), monitorIpInfo.getLongitude());
 	}
 
 	public String getParameterString() {
