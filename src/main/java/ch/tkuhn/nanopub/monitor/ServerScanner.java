@@ -189,6 +189,48 @@ public class ServerScanner implements ICode {
 					ex.printStackTrace();
 					d.reportTestFailure("INACCESSIBLE");
 				}
+			} else if (d.hasServiceType(NanopubService.NANOPUB_MONITOR_TYPE_IRI)) {
+				logger.info("Trying to access " + d.getServiceId() + ".csv...");
+				try {
+					HttpGet get = new HttpGet(d.getServiceId() + ".csv");
+					get.setHeader("Accept", "text/csv");
+					StopWatch watch = new StopWatch();
+					watch.start();
+					HttpResponse resp = c.execute(get);
+					watch.stop();
+					if (!wasSuccessful(resp)) {
+						logger.info("Test failed. HTTP code " + resp.getStatusLine().getStatusCode());
+						d.reportTestFailure("DOWN");
+					} else {
+						CSVReader csvReader = null;
+						try {
+							csvReader = new CSVReader(new BufferedReader(new InputStreamReader(resp.getEntity().getContent())));
+							String[] line = null;
+							int n = 0;
+							while ((line = csvReader.readNext()) != null) {
+								n++;
+								if (n == 1) {
+									// ignore header line
+								} else {
+									if (line[0].startsWith("http")) {
+										d.reportTestSuccess(watch.getTime());
+									} else {
+										d.reportTestFailure("BROKEN");
+									}
+									break;
+								}
+							}
+						} catch (Exception ex) {
+							logger.info("Test failed. Exception: " + ex.getMessage());
+							d.reportTestFailure("BROKEN");
+						} finally {
+							if (csvReader != null) csvReader.close();
+						}
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					d.reportTestFailure("INACCESSIBLE");
+				}
 			} else {
 				logger.info("Trying to access " + d.getServiceId() + "...");
 				try {
