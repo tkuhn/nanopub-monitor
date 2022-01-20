@@ -40,7 +40,7 @@ public class CsvTable implements SerializableSupplier<IResource> {
 					(dist == null ? "" : dist + ""),
 					MonitorPage.formatDate(sd.getLastSeenDate()),
 					(i == null ? "" : i.getIp()),
-					(i == null ? "" : i.getCity()),
+					(i == null ? "" : i.getCity() + ", " + i.getCountryName()),
 					sd.getParameterString(),
 					sd.getDescription()
 				});
