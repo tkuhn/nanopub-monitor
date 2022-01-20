@@ -12,6 +12,9 @@ public class NanopubService {
 	public static final IRI NANOPUB_MONITOR_TYPE_IRI = vf.createIRI("https://github.com/tkuhn/nanopub-monitor#service");
 	public static final IRI LDF_SERVICE_TYPE_IRI = vf.createIRI("https://github.com/peta-pico/nanopub-services#np-ldf-server");
 	public static final IRI GRLC_SERVICE_TYPE_IRI = vf.createIRI("https://github.com/peta-pico/nanopub-services#grlc-np-api");
+	public static final IRI SIGNED_LDF_SERVICE_TYPE_IRI = vf.createIRI("https://github.com/peta-pico/signed-nanopub-services#np-ldf-server");
+	public static final IRI SIGNED_GRLC_SERVICE_TYPE_IRI = vf.createIRI("https://github.com/peta-pico/signed-nanopub-services#grlc-np-api");
+	public static final IRI SIGNED_SPARQL_SERVICE_TYPE_IRI = vf.createIRI("https://github.com/peta-pico/signed-nanopub-services#np-sparql-api");
 
 	private final IRI serviceIri;
 	private final IRI typeIri;
@@ -42,6 +45,12 @@ public class NanopubService {
 			return 3;
 		} else if (typeIri.equals(GRLC_SERVICE_TYPE_IRI)) {
 			return -3;
+		} else if (typeIri.equals(SIGNED_LDF_SERVICE_TYPE_IRI)) {
+			return 3;
+		} else if (typeIri.equals(SIGNED_GRLC_SERVICE_TYPE_IRI)) {
+			return -3;
+		} else if (typeIri.equals(SIGNED_SPARQL_SERVICE_TYPE_IRI)) {
+			return 3;
 		}
 		return 0;
 	}
@@ -55,6 +64,12 @@ public class NanopubService {
 			return 3;
 		} else if (typeIri.equals(GRLC_SERVICE_TYPE_IRI)) {
 			return 3;
+		} else if (typeIri.equals(SIGNED_LDF_SERVICE_TYPE_IRI)) {
+			return 0;
+		} else if (typeIri.equals(SIGNED_GRLC_SERVICE_TYPE_IRI)) {
+			return 0;
+		} else if (typeIri.equals(SIGNED_SPARQL_SERVICE_TYPE_IRI)) {
+			return -3;
 		}
 		return 0;
 	}
@@ -68,6 +83,12 @@ public class NanopubService {
 			return "skyblue";
 		} else if (typeIri.equals(GRLC_SERVICE_TYPE_IRI)) {
 			return "darkseagreen";
+		} else if (typeIri.equals(SIGNED_LDF_SERVICE_TYPE_IRI)) {
+			return "#4682B4";
+		} else if (typeIri.equals(SIGNED_GRLC_SERVICE_TYPE_IRI)) {
+			return "lightseagreen";
+		} else if (typeIri.equals(SIGNED_SPARQL_SERVICE_TYPE_IRI)) {
+			return "mediumpurple";
 		}
 		return "gray";
 	}

@@ -110,7 +110,7 @@ public class ServerScanner implements ICode {
 					ex.printStackTrace();
 					d.reportTestFailure("INACCESSIBLE");
 				}
-			} else if (d.hasServiceType(NanopubService.GRLC_SERVICE_TYPE_IRI)) {
+			} else if (d.hasServiceType(NanopubService.GRLC_SERVICE_TYPE_IRI) || d.hasServiceType(NanopubService.SIGNED_GRLC_SERVICE_TYPE_IRI)) {
 				logger.info("Trying to access " + d.getServiceId() + "get_nanopub_count...");
 				try {
 					HttpGet get = new HttpGet(d.getServiceId() + "get_nanopub_count");
@@ -133,7 +133,7 @@ public class ServerScanner implements ICode {
 								if (n == 1) {
 									// ignore header line
 								} else {
-									if (line[0].matches("[0-9]{8,}")) {
+									if (line[0].matches("[0-9]{5,}")) {
 										d.reportTestSuccess(watch.getTime());
 									} else {
 										d.reportTestFailure("BROKEN");
@@ -152,7 +152,7 @@ public class ServerScanner implements ICode {
 					ex.printStackTrace();
 					d.reportTestFailure("INACCESSIBLE");
 				}
-			} else if (d.hasServiceType(NanopubService.LDF_SERVICE_TYPE_IRI)) {
+			} else if (d.hasServiceType(NanopubService.LDF_SERVICE_TYPE_IRI) || d.hasServiceType(NanopubService.SIGNED_LDF_SERVICE_TYPE_IRI)) {
 				logger.info("Trying to access " + d.getServiceId() + "?object=http%3A%2F%2Fwww.nanopub.org%2Fnschema%23Nanopublication...");
 				try {
 					HttpGet get = new HttpGet(d.getServiceId() + "?object=http%3A%2F%2Fwww.nanopub.org%2Fnschema%23Nanopublication");
@@ -183,6 +183,45 @@ public class ServerScanner implements ICode {
 							d.reportTestFailure("BROKEN");
 						} finally {
 							if (reader != null) reader.close();
+						}
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					d.reportTestFailure("INACCESSIBLE");
+				}
+			} else if (d.hasServiceType(NanopubService.SIGNED_SPARQL_SERVICE_TYPE_IRI)) {
+				String urlSuffix = "?query=select+%3Fx+where+%7B%3Fx+a+%3Fc%7D+limit+100&format=text%2Fcsv";
+				logger.info("Trying to access " + d.getServiceId() + urlSuffix + "...");
+				try {
+					HttpGet get = new HttpGet(d.getServiceId() + urlSuffix);
+					get.setHeader("Accept", "text/csv");
+					StopWatch watch = new StopWatch();
+					watch.start();
+					HttpResponse resp = c.execute(get);
+					watch.stop();
+					if (!wasSuccessful(resp)) {
+						logger.info("Test failed. HTTP code " + resp.getStatusLine().getStatusCode());
+						d.reportTestFailure("DOWN");
+					} else {
+						CSVReader csvReader = null;
+						try {
+							csvReader = new CSVReader(new BufferedReader(new InputStreamReader(resp.getEntity().getContent())));
+							String[] line;
+							int count = 0;
+							while ((csvReader.readNext()) != null) {
+								count++;
+							}
+							System.err.println("xxx: " + count);
+							if (count >= 100) {
+								d.reportTestSuccess(watch.getTime());
+							} else {
+								d.reportTestFailure("BROKEN");
+							}
+						} catch (Exception ex) {
+							logger.info("Test failed. Exception: " + ex.getMessage());
+							d.reportTestFailure("BROKEN");
+						} finally {
+							if (csvReader != null) csvReader.close();
 						}
 					}
 				} catch (Exception ex) {
