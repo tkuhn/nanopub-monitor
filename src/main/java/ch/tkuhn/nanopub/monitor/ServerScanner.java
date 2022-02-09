@@ -72,6 +72,10 @@ public class ServerScanner implements ICode {
 			stillAlive();
 			if (d.hasServiceType(NanopubService.NANOPUB_SERVER_TYPE_IRI)) {
 				ServerInfo i = (ServerInfo) d.getServerInfo();
+				if (i == null) {
+					d.reportTestFailure("DOWN");
+					continue;
+				}
 				if (i.getNextNanopubNo() == 0) continue;
 				try {
 					long npNo = (long) (random.nextDouble() * (i.getNextNanopubNo()));
@@ -211,7 +215,6 @@ public class ServerScanner implements ICode {
 							while ((csvReader.readNext()) != null) {
 								count++;
 							}
-							System.err.println("xxx: " + count);
 							if (count >= 100) {
 								d.reportTestSuccess(watch.getTime());
 							} else {
