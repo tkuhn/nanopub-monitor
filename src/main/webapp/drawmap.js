@@ -2,7 +2,7 @@ Raphael("map", 1000, 400, function () {
   var r = this;
   r.rect(0, 0, 1000, 400, 10).attr({
     stroke: "none",
-    fill: "#48d"
+    fill: "#09baa2"
   });
   r.setStart();
   for (var country in worldmap.shapes) {
